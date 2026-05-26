@@ -10,6 +10,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Currency> Currencies => Set<Currency>();
     public DbSet<Importer> Importers => Set<Importer>();
     public DbSet<Supplier> Suppliers => Set<Supplier>();
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<TariffCategory> TariffCategories => Set<TariffCategory>();
+    public DbSet<ExchangeRate> ExchangeRates => Set<ExchangeRate>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
