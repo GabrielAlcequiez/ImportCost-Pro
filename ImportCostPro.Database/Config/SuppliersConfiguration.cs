@@ -1,5 +1,8 @@
+using ImportCostPro.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace ImportCostPro.Database.Configurations;
 
 public class SuppliersConfiguration : IEntityTypeConfiguration<Supplier>
 {

@@ -1,3 +1,4 @@
+namespace ImportCostPro.Database.Entities;
 public class Supplier
 {
     public Guid Id { get; private set; }
