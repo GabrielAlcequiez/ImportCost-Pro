@@ -31,6 +31,7 @@ public class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
             .IsRequired();
 
         builder.Property(c => c.IsActive)
-            .IsRequired();
+            .IsRequired()
+            .HasDefaultValue(true);
     }
 }

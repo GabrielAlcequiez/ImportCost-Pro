@@ -21,6 +21,7 @@ public class CountryConfiguration : IEntityTypeConfiguration<Country>
             .IsUnique();
 
         builder.Property(c => c.IsActive)
-            .IsRequired();
+            .IsRequired()
+            .HasDefaultValue(true);
     }
 }
