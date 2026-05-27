@@ -13,6 +13,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Product> Products => Set<Product>();
     public DbSet<TariffCategory> TariffCategories => Set<TariffCategory>();
     public DbSet<ExchangeRate> ExchangeRates => Set<ExchangeRate>();
+    public DbSet<ImportOrder> ImportOrders => Set<ImportOrder>();
+    public DbSet<ImportOrderDetail> ImportOrderDetails => Set<ImportOrderDetail>();
+    public DbSet<ImportOrderExpense> ImportOrderExpenses => Set<ImportOrderExpense>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
