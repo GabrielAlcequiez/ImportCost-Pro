@@ -10,10 +10,13 @@ public class TariffCategory
     public bool ApplyITBIS { get; private set; }
     public bool ApplyExciseTax { get; private set; }
     public decimal ExciseTaxPercentage { get; private set; }
-    public bool IsActive {get; private set; }
+    public bool IsActive { get; private set; }
 
+    
+    private TariffCategory() { }
     public TariffCategory(string tariffCode, string name, decimal tariffPercentage, bool applyItbis, bool applyExciseTax)
     {
+        Id = Guid.NewGuid();
         TariffCode = tariffCode.Trim();
         Name = name.Trim();
         TariffPercentage = tariffPercentage;
