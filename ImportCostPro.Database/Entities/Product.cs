@@ -26,7 +26,22 @@ public class Product
         Width = width;
         Height = height;
         UnitOfMeasure = uom;
-        Description = description;
+        Description = description?.Trim();
         IsActive = true;
+    }
+
+    public void Update(string name, string codeReference, Guid countryId, Guid tariffCategoryId, decimal unitWeight, decimal? length, decimal? width, decimal? height, UnitOfMeasure uom, string? description, bool isactive)
+    {
+        Name = name.Trim();
+        CodeReference = codeReference.Trim();
+        CountryId = countryId;
+        TariffCategoryId = tariffCategoryId;
+        UnitWeight = unitWeight;
+        Length = length;
+        Width = width;
+        Height = height;
+        UnitOfMeasure = uom;
+        Description = description?.Trim();
+        IsActive = isactive;
     }
 }

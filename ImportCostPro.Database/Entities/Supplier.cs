@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore.Update.Internal;
+
 namespace ImportCostPro.Database.Entities;
 public class Supplier
 {
@@ -17,9 +19,19 @@ public class Supplier
         Id = Guid.NewGuid();
         Name = name.Trim();
         CountryId = countryId;
-        Telephone = telephone;
-        Email = email;
+        Email = email?.Trim();
+        Telephone = telephone?.Trim();
         CurrencyId = currencyId;
         IsActive = true;
+    }
+
+    public void Update(string name, Guid countryId, string? telephone, string? email, Guid currencyId, bool isactive)
+    {
+        Name = name.Trim();
+        CountryId = countryId;
+        Email = email?.Trim();
+        Telephone = telephone?.Trim();
+        CurrencyId = currencyId;
+        IsActive = isactive;
     }
 }

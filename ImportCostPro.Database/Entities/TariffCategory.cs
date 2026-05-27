@@ -21,4 +21,14 @@ public class TariffCategory
         ApplyExciseTax = applyExciseTax;
         IsActive = true;
     }
+
+    public void Update(string tariffCode, string name, decimal tariffPercentage, bool applyItbis, bool applyExciseTax, bool isactive)
+    {
+        TariffCode = tariffCode.Trim();
+        Name = name.Trim();
+        TariffPercentage = tariffPercentage;
+        ApplyITBIS = applyItbis;
+        ApplyExciseTax = applyExciseTax;
+        IsActive = isactive;
+    }
 }
