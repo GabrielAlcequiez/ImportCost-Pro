@@ -36,18 +36,6 @@ namespace ImportCostPro.Database.Configurations
                 .IsRequired()
                 .HasConversion<int>();
 
-            // Configuración de precisión decimal para resultados financieros (Nullables)
-            builder.Property(o => o.FobTotalLocal).HasColumnType("decimal(18,2)");
-            builder.Property(o => o.FreightTotalLocal).HasColumnType("decimal(18,2)");
-            builder.Property(o => o.InsuranceTotalLocal).HasColumnType("decimal(18,2)");
-            builder.Property(o => o.CifTotalLocal).HasColumnType("decimal(18,2)");
-            builder.Property(o => o.DutyTotalLocal).HasColumnType("decimal(18,2)");
-            builder.Property(o => o.ItbisTotalLocal).HasColumnType("decimal(18,2)");
-            builder.Property(o => o.SelectiveTaxTotalLocal).HasColumnType("decimal(18,2)");
-            builder.Property(o => o.CustomsServiceFeeTotalLocal).HasColumnType("decimal(18,2)");
-            builder.Property(o => o.LocalExpensesTotalLocal).HasColumnType("decimal(18,2)");
-            builder.Property(o => o.ImportTotalCost).HasColumnType("decimal(18,2)");
-
             // Relaciones de claves foráneas con borrado restringido (Pág. 140 - No borrar maestros usados)
             builder.HasOne(o => o.Importer)
                 .WithMany()

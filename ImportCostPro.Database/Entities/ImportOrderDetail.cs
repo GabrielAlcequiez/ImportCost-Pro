@@ -14,20 +14,6 @@ namespace ImportCostPro.Database.Entities
         public decimal CustomDutyPercentage { get; private set; } // Frozen from TariffCategory
         public decimal DesiredProfitMargin { get; private set; } // En porcentaje (ej. 30 para 30%)
 
-        // Calculation Results (Nullables until calculated)
-        public decimal? FobLocal { get; private set; }
-        public decimal? FreightAssigned { get; private set; }
-        public decimal? InsuranceAssigned { get; private set; }
-        public decimal? CifLocal { get; private set; }
-        public decimal? DutyCalculated { get; private set; } // Arancel calculado
-        public decimal? SelectiveTaxCalculated { get; private set; }
-        public decimal? CustomsServiceFeeCalculated { get; private set; }
-        public decimal? ItbisCalculated { get; private set; }
-        public decimal? LocalExpensesAssigned { get; private set; }
-        public decimal? ImportTotalCost { get; private set; }
-        public decimal? UnitLandedCost { get; private set; } // Costo unitario importado
-        public decimal? SuggestedSellingPrice { get; private set; } // Precio de venta sugerido
-
         // Navigation Properties
         public ImportOrder ImportOrder { get; private set; } = null!;
         public Product Product { get; private set; } = null!;
@@ -73,20 +59,5 @@ namespace ImportCostPro.Database.Entities
         }
 
         // Internal helper to set calculation results (called by Domain Service during landed cost calculation)
-        public void SetCalculationResults(decimal fobLocal, decimal freight, decimal insurance, decimal cifLocal, decimal duty, decimal selectiveTax, decimal customsFee, decimal itbis, decimal localExpenses, decimal importTotal, decimal unitLanded, decimal suggestedPrice)
-        {
-            FobLocal = fobLocal;
-            FreightAssigned = freight;
-            InsuranceAssigned = insurance;
-            CifLocal = cifLocal;
-            DutyCalculated = duty;
-            SelectiveTaxCalculated = selectiveTax;
-            CustomsServiceFeeCalculated = customsFee;
-            ItbisCalculated = itbis;
-            LocalExpensesAssigned = localExpenses;
-            ImportTotalCost = importTotal;
-            UnitLandedCost = unitLanded;
-            SuggestedSellingPrice = suggestedPrice;
-        }
     }
 }

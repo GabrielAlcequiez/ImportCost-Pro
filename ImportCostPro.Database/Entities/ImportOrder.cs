@@ -17,17 +17,7 @@ namespace ImportCostPro.Database.Entities
         public Guid CurrencyId { get; private set; }
         public decimal ExchangeRateValue { get; private set; }
 
-        // Nullable calculations (Official frozen calculation values)
-        public decimal? FobTotalLocal { get; private set; }
-        public decimal? FreightTotalLocal { get; private set; }
-        public decimal? InsuranceTotalLocal { get; private set; }
-        public decimal? CifTotalLocal { get; private set; }
-        public decimal? DutyTotalLocal { get; private set; } // Arancel Total
-        public decimal? ItbisTotalLocal { get; private set; } // ITBIS Total
-        public decimal? SelectiveTaxTotalLocal { get; private set; } // Impuesto Selectivo Total
-        public decimal? CustomsServiceFeeTotalLocal { get; private set; } // Tasa Servicio Aduanal Total
-        public decimal? LocalExpensesTotalLocal { get; private set; } // Gastos Locales Total
-        public decimal? ImportTotalCost { get; private set; } // Costo Total Importado
+        
 
         // Navigation Properties
         public Importer Importer { get; private set; } = null!;
@@ -78,26 +68,7 @@ namespace ImportCostPro.Database.Entities
             ExchangeRateValue = exchangeRateValue;
             TransportMode = transportMode;
         }
-
-        // Save official calculated costs and transitions state to Calculated
-        public void SaveOfficialCalculation(decimal fobTotal, decimal freightTotal, decimal insuranceTotal, decimal cifTotal, decimal dutyTotal, decimal itbisTotal, decimal selectiveTax, decimal customsFee, decimal localExpenses, decimal importTotal)
-        {
-            if (Status != ImportOrderStatus.Open)
-                throw new InvalidOperationException("Solo se puede guardar el cálculo oficial si la orden está Abierta.");
-
-            FobTotalLocal = fobTotal;
-            FreightTotalLocal = freightTotal;
-            InsuranceTotalLocal = insuranceTotal;
-            CifTotalLocal = cifTotal;
-            DutyTotalLocal = dutyTotal;
-            ItbisTotalLocal = itbisTotal;
-            SelectiveTaxTotalLocal = selectiveTax;
-            CustomsServiceFeeTotalLocal = customsFee;
-            LocalExpensesTotalLocal = localExpenses;
-            ImportTotalCost = importTotal;
-
-            Status = ImportOrderStatus.Calculated;
-        }
+        
 
         // Transition from Calculated to Closed
         public void CloseOrder()

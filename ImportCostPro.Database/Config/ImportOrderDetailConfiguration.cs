@@ -36,20 +36,6 @@ namespace ImportCostPro.Database.Configurations
                 .IsRequired()
                 .HasColumnType("decimal(5,2)"); // Margen de ganancia (Ej. 35.00%)
 
-            // Mapeo de precisión para resultados financieros (Nullables)
-            builder.Property(d => d.FobLocal).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.FreightAssigned).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.InsuranceAssigned).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.CifLocal).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.DutyCalculated).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.SelectiveTaxCalculated).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.CustomsServiceFeeCalculated).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.ItbisCalculated).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.LocalExpensesAssigned).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.ImportTotalCost).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.UnitLandedCost).HasColumnType("decimal(18,2)");
-            builder.Property(d => d.SuggestedSellingPrice).HasColumnType("decimal(18,2)");
-
             // Relación Cascade: Si se borra la orden cabecera, se borran sus líneas de detalle
             builder.HasOne(d => d.ImportOrder)
                 .WithMany(o => o.Details)
