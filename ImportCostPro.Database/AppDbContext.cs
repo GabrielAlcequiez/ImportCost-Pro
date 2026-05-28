@@ -16,6 +16,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ImportOrder> ImportOrders => Set<ImportOrder>();
     public DbSet<ImportOrderDetail> ImportOrderDetails => Set<ImportOrderDetail>();
     public DbSet<ImportOrderExpense> ImportOrderExpenses => Set<ImportOrderExpense>();
+    public DbSet<TaxConfiguration> TaxConfigurations => Set<TaxConfiguration>();
+    public DbSet<LandedCostCalculation> LandedCostCalculations=> Set<LandedCostCalculation>();
+    public DbSet<LandedCostCalculationDetail> LandedCostCalculationDetails => Set<LandedCostCalculationDetail>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
