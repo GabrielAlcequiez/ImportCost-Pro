@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore.Update.Internal;
+using Microsoft.Identity.Client;
 
 namespace ImportCostPro.Database.Entities;
 public class Supplier
@@ -12,6 +13,9 @@ public class Supplier
     public Guid CurrencyId {get; private set;}
     public bool IsActive {get; private set;}
 
+    // Navigation Properties for fk
+    public Country Country {get; private set;}
+    public Currency Currency {get; private set;}
     private Supplier(){}
 
     public Supplier(string name, Guid countryId, string? telephone, string? email, Guid currencyId)

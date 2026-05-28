@@ -30,5 +30,17 @@ public class SuppliersConfiguration : IEntityTypeConfiguration<Supplier>
         builder.Property(x=>x.IsActive)
             .IsRequired()
             .HasDefaultValue(true);
+
+        // Relación con País (Ubicación del proveedor)
+        builder.HasOne(s => s.Country)
+            .WithMany()
+            .HasForeignKey(s => s.CountryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Relación con Moneda (Moneda principal de negociación)
+        builder.HasOne(s => s.Currency)
+            .WithMany()
+            .HasForeignKey(s => s.CurrencyId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

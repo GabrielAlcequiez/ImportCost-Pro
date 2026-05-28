@@ -27,9 +27,10 @@ public class Importer
         IsActive = true;
     }
 
-    public void Update(string name, Guid countryId, string? phone, string? email, string? address, bool isActive)
+    public void Update(string name, string taxId, Guid countryId, string? phone, string? email, string? address, bool isActive)
     {
         Name = name.Trim();
+        TaxId = taxId.Trim();
         CountryId = countryId;
         Phone = phone?.Trim();
         Email = email?.Trim();

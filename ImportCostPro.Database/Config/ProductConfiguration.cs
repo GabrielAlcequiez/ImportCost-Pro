@@ -53,5 +53,15 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.IsActive)
             .IsRequired()
             .HasDefaultValue(true);
+
+        builder.HasOne(p=>p.Country)
+            .WithMany()
+            .HasForeignKey(p=>p.CountryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(p => p.TariffCategory)
+            .WithMany()
+            .HasForeignKey(p => p.TariffCategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

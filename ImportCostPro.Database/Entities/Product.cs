@@ -14,6 +14,10 @@ public class Product
     public string? Description {get; private set;}
     public bool IsActive {get; private set;}
 
+    // Navigation Properties for fk
+    public Country Country { get; private set;}
+    public TariffCategory TariffCategory {get; private set;}
+     
     public Product(string name, string codeReference, Guid countryId, Guid tariffCategoryId, decimal unitWeight, decimal? length, decimal? width, decimal? height, UnitOfMeasure uom, string? description)
     {
         Id = Guid.NewGuid();
