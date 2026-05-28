@@ -11,9 +11,6 @@ namespace ImportCostPro.Database.Configurations
             builder.ToTable("ImportOrderExpenses");
             builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.Description)
-                .HasMaxLength(150);
-
             builder.Property(e => e.Amount)
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");
