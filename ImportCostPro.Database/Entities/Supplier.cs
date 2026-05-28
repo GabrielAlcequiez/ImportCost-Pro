@@ -14,8 +14,8 @@ public class Supplier
     public bool IsActive {get; private set;}
 
     // Navigation Properties for fk
-    public Country Country {get; private set;}
-    public Currency Currency {get; private set;}
+    public Country Country {get; private set;} = null!;
+    public Currency Currency {get; private set;} = null!;
     private Supplier(){}
 
     public Supplier(string name, Guid countryId, string? telephone, string? email, Guid currencyId)
