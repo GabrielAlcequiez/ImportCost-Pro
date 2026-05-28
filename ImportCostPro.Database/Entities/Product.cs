@@ -1,3 +1,5 @@
+using ImportCostPro.Database.Entities.Enums;
+
 namespace ImportCostPro.Database.Entities;
 public class Product
 {
@@ -15,9 +17,11 @@ public class Product
     public bool IsActive {get; private set;}
 
     // Navigation Properties for fk
-    public Country Country { get; private set;}
-    public TariffCategory TariffCategory {get; private set;}
-     
+    public Country Country { get; private set; } = null!;
+    public TariffCategory TariffCategory { get; private set; } = null!;
+
+    private Product() { }
+
     public Product(string name, string codeReference, Guid countryId, Guid tariffCategoryId, decimal unitWeight, decimal? length, decimal? width, decimal? height, UnitOfMeasure uom, string? description)
     {
         Id = Guid.NewGuid();

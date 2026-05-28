@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore.Update.Internal;
-using Microsoft.Identity.Client;
 
 namespace ImportCostPro.Database.Entities;
 public class Supplier

@@ -1,4 +1,4 @@
-namespace ImportCostPro.Database.Entities;
+namespace ImportCostPro.Database.Entities.Enums;
 public enum UnitOfMeasure
 {
     UNIT = 1,
