@@ -14,7 +14,7 @@ public class TariffCategory
 
     
     private TariffCategory() { }
-    public TariffCategory(string tariffCode, string name, decimal tariffPercentage, bool applyItbis, bool applyExciseTax)
+    public TariffCategory(string tariffCode, string name, decimal tariffPercentage, bool applyItbis, bool applyExciseTax, decimal excisteTaxPercentage)
     {
         Id = Guid.NewGuid();
         TariffCode = tariffCode.Trim();
@@ -22,16 +22,18 @@ public class TariffCategory
         TariffPercentage = tariffPercentage;
         ApplyITBIS = applyItbis;
         ApplyExciseTax = applyExciseTax;
+        ExciseTaxPercentage = excisteTaxPercentage;
         IsActive = true;
     }
 
-    public void Update(string tariffCode, string name, decimal tariffPercentage, bool applyItbis, bool applyExciseTax, bool isactive)
+    public void Update(string tariffCode, string name, decimal tariffPercentage, bool applyItbis, bool applyExciseTax, decimal excisteTaxPercentage, bool isactive)
     {
         TariffCode = tariffCode.Trim();
         Name = name.Trim();
         TariffPercentage = tariffPercentage;
         ApplyITBIS = applyItbis;
         ApplyExciseTax = applyExciseTax;
+        ExciseTaxPercentage = excisteTaxPercentage;
         IsActive = isactive;
     }
 }
