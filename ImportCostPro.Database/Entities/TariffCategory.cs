@@ -3,13 +3,13 @@ namespace ImportCostPro.Database.Entities;
 public class TariffCategory
 {
     public Guid Id { get; private set; }
-    public string TariffCode { get; private set; } = string.Empty;
-    public string Name { get; private set; } = string.Empty;
+    public string TariffCode { get; private set; } = string.Empty; // Código Arancelario
+    public string Name { get; private set; } = string.Empty; 
 
-    public decimal TariffPercentage { get; private set; }
-    public bool ApplyITBIS { get; private set; }
-    public bool ApplyExciseTax { get; private set; }
-    public decimal ExciseTaxPercentage { get; private set; }
+    public decimal TariffPercentage { get; private set; } // Porcentaje de Arancel
+    public bool ApplyITBIS { get; private set; } // Aplica ITBIS
+    public bool ApplyExciseTax { get; private set; } // Aplica impuesto selectivo
+    public decimal ExciseTaxPercentage { get; private set; } // Porcentaje de impuesto selectivo
     public bool IsActive { get; private set; }
 
     

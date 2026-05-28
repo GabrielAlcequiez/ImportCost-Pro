@@ -1,5 +1,3 @@
-using System;
-
 namespace ImportCostPro.Database.Entities
 {
     public class ImportOrderDetail
@@ -42,8 +40,8 @@ namespace ImportCostPro.Database.Entities
         {
             if (quantity <= 0)
                 throw new ArgumentException("La cantidad debe ser mayor que 0.", nameof(quantity));
-            if (unitCostFob < 0)
-                throw new ArgumentException("El costo FOB no puede ser negativo.", nameof(unitCostFob));
+            if (unitCostFob <= 0)
+                throw new ArgumentException("El costo FOB debe ser mayor que 0.", nameof(unitCostFob));
             if (desiredProfitMargin < 0 || desiredProfitMargin >= 100)
                 throw new ArgumentException("El margen deseado debe estar entre 0% y menor que 100%.", nameof(desiredProfitMargin));
 

@@ -16,7 +16,6 @@ namespace ImportCostPro.Database.Entities
         public decimal ExchangeRateValue { get; private set; } // Tasa de cambio para convertir a la moneda local
         public ApportionmentMethod ApportionmentMethod { get; private set; }
         public DateTime ExpenseDate { get; private set; }
-        public string? Description { get; private set; }
 
         // Navigation Properties
         public ImportOrder ImportOrder { get; private set; } = null!;
@@ -29,7 +28,7 @@ namespace ImportCostPro.Database.Entities
         private ImportOrderExpense() { }
 
         // Public constructor for business logic instantiation
-        public ImportOrderExpense(Guid importOrderId, ExpenseType expenseType, decimal amount, Guid currencyId, decimal exchangeRateValue, ApportionmentMethod apportionmentMethod, DateTime expenseDate, string? description)
+        public ImportOrderExpense(Guid importOrderId, ExpenseType expenseType, decimal amount, Guid currencyId, decimal exchangeRateValue, ApportionmentMethod apportionmentMethod, DateTime expenseDate)
         {
             if (amount <= 0)
                 throw new ArgumentException("El monto del gasto debe ser mayor que 0.", nameof(amount));
@@ -44,11 +43,10 @@ namespace ImportCostPro.Database.Entities
             ExchangeRateValue = exchangeRateValue;
             ApportionmentMethod = apportionmentMethod;
             ExpenseDate = expenseDate.Date; // Truncating time to keep date only
-            Description = description?.Trim();
         }
 
         // Domain method to update expense
-        public void UpdateExpense(ExpenseType expenseType, decimal amount, Guid currencyId, decimal exchangeRateValue, ApportionmentMethod apportionmentMethod, DateTime expenseDate, string? description)
+        public void UpdateExpense(ExpenseType expenseType, decimal amount, Guid currencyId, decimal exchangeRateValue, ApportionmentMethod apportionmentMethod, DateTime expenseDate)
         {
             if (amount <= 0)
                 throw new ArgumentException("El monto del gasto debe ser mayor que 0.", nameof(amount));
@@ -61,7 +59,6 @@ namespace ImportCostPro.Database.Entities
             ExchangeRateValue = exchangeRateValue;
             ApportionmentMethod = apportionmentMethod;
             ExpenseDate = expenseDate.Date;
-            Description = description?.Trim();
         }
     }
 }
