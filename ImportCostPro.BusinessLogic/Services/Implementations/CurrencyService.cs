@@ -2,17 +2,22 @@ using ImportCostPro.BusinessLogic.DTOs.Currency;
 using ImportCostPro.BusinessLogic.Services.Interfaces;
 using ImportCostPro.Database;
 using ImportCostPro.Database.Entities;
+using ImportCostPro.Database.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ImportCostPro.BusinessLogic.Services.Implementations
 {
-    public class CurrencyService(AppDbContext context) : ICurrencyService
+    public class CurrencyService : ICurrencyService
     {
-        private readonly AppDbContext _context = context;
+        private readonly ICurrencyRepository _repository;
+        public CurrencyService(ICurrencyRepository repository)
+        {
+            _repository = repository;
+        }
 
         public async Task<List<CurrencyDto>> GetAllCurrenciesAsync()
         {
-            var currencies = await _context.Currencies.ToListAsync();
+            var currencies = await _repository.GetAllAsync();
             var dtos = new List<CurrencyDto>();
 
             foreach (var currency in currencies)
@@ -32,7 +37,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<CurrencyDto?> GetCurrencyByIdAsync(Guid id)
         {
-            var currency = await _context.Currencies.FindAsync(id);
+            var currency = await _repository.GetByIdAsync(id);
             if (currency == null) return null;
 
             return new CurrencyDto
@@ -67,11 +72,11 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 throw new ArgumentException("ISOCode must be exactly 3 characters long.");
 
             // Check uniqueness of Name and ISOCode
-            if (await _context.Currencies.AnyAsync(c => c.Name.ToLower() == nameTrimmed.ToLower()))
-                throw new InvalidOperationException("A currency with the same name already exists.");
+            // if (await _context.Currencies.AnyAsync(c => c.Name.ToLower() == nameTrimmed.ToLower()))
+            //     throw new InvalidOperationException("A currency with the same name already exists.");
 
-            if (await _context.Currencies.AnyAsync(c => c.ISOCode == isoCodeNormalized))
-                throw new InvalidOperationException("A currency with the same ISO code already exists.");
+            // if (await _context.Currencies.AnyAsync(c => c.ISOCode == isoCodeNormalized))
+            //     throw new InvalidOperationException("A currency with the same ISO code already exists.");
 
             // If this currency is marked as local, ensure it's the only one
             if (currencyCreateDto.IsLocalCurrency)
@@ -79,9 +84,9 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 await DeactivateExistingLocalCurrenciesAsync();
             }
 
+
             var newCurrency = new Currency(nameTrimmed, isoCodeNormalized, symbolTrimmed, currencyCreateDto.IsLocalCurrency);
-            _context.Currencies.Add(newCurrency);
-            await _context.SaveChangesAsync();
+            await _repository.AddAsync(newCurrency);
 
             return new CurrencyDto
             {
@@ -98,7 +103,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         {
             ArgumentNullException.ThrowIfNull(currencyUpdateDto);
 
-            var currency = await _context.Currencies.FindAsync(id)
+            var currency = await _repository.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Currency not found.");
 
             if (string.IsNullOrWhiteSpace(currencyUpdateDto.Name))
@@ -110,28 +115,34 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             if (string.IsNullOrWhiteSpace(currencyUpdateDto.Symbol))
                 throw new ArgumentException("Symbol cannot be null or empty.");
 
-            var nameTrimmed = currencyUpdateDto.Name.Trim();
-            var isoCodeNormalized = currencyUpdateDto.ISOCode.Trim().ToUpperInvariant();
-            var symbolTrimmed = currencyUpdateDto.Symbol.Trim();
+            // var nameTrimmed = currencyUpdateDto.Name.Trim();
+            // var isoCodeNormalized = currencyUpdateDto.ISOCode.Trim().ToUpperInvariant();
+            // var symbolTrimmed = currencyUpdateDto.Symbol.Trim();
 
-            if (isoCodeNormalized.Length != 3)
-                throw new ArgumentException("ISOCode must be exactly 3 characters long.");
+            // if (isoCodeNormalized.Length != 3)
+            //     throw new ArgumentException("ISOCode must be exactly 3 characters long.");
 
-            // Check uniqueness of Name and ISOCode excluding current record
-            if (await _context.Currencies.AnyAsync(c => c.Id != id && c.Name.ToLower() == nameTrimmed.ToLower()))
-                throw new InvalidOperationException("A currency with the same name already exists.");
+            // // Check uniqueness of Name and ISOCode excluding current record
+            // if (await _context.Currencies.AnyAsync(c => c.Id != id && c.Name.ToLower() == nameTrimmed.ToLower()))
+            //     throw new InvalidOperationException("A currency with the same name already exists.");
 
-            if (await _context.Currencies.AnyAsync(c => c.Id != id && c.ISOCode == isoCodeNormalized))
-                throw new InvalidOperationException("A currency with the same ISO code already exists.");
+            // if (await _context.Currencies.AnyAsync(c => c.Id != id && c.ISOCode == isoCodeNormalized))
+            //     throw new InvalidOperationException("A currency with the same ISO code already exists.");
 
             // If we are deactivating local status on this currency, we must ensure another local currency exists
-            if (currency.IsLocalCurrency && !currencyUpdateDto.IsLocalCurrency)
+            // if (currency.IsLocalCurrency && !currencyUpdateDto.IsLocalCurrency)
+            // {
+            //     var otherLocalExists = await _context.Currencies.AnyAsync(c => c.Id != id && c.IsLocalCurrency && c.IsActive);
+            //     if (!otherLocalExists)
+            //     {
+            //         throw new InvalidOperationException("Cannot unset local status on the only active local currency. You must designate another local currency first.");
+            //     }
+            // }
+
+            // If we are deactivating a currency that is local, check if another local currency is active
+            if (!currencyUpdateDto.IsActive && currencyUpdateDto.IsLocalCurrency)
             {
-                var otherLocalExists = await _context.Currencies.AnyAsync(c => c.Id != id && c.IsLocalCurrency && c.IsActive);
-                if (!otherLocalExists)
-                {
-                    throw new InvalidOperationException("Cannot unset local status on the only active local currency. You must designate another local currency first.");
-                }
+                throw new InvalidOperationException("Cannot deactivate the current active local currency.");
             }
 
             // If this currency is being marked as local, ensure it's the only one
@@ -140,14 +151,16 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 await DeactivateExistingLocalCurrenciesAsync(id);
             }
 
-            // If we are deactivating a currency that is local, check if another local currency is active
-            if (!currencyUpdateDto.IsActive && currencyUpdateDto.IsLocalCurrency)
-            {
-                throw new InvalidOperationException("Cannot deactivate the current active local currency.");
-            }
 
-            currency.Update(nameTrimmed, isoCodeNormalized, symbolTrimmed, currencyUpdateDto.IsLocalCurrency, currencyUpdateDto.IsActive);
-            await _context.SaveChangesAsync();
+            currency.Update(
+                currencyUpdateDto.Name.Trim(),
+                currencyUpdateDto.ISOCode.Trim().ToUpperInvariant(),
+                currencyUpdateDto.Symbol.Trim(),
+                currencyUpdateDto.IsLocalCurrency,
+                currencyUpdateDto.IsActive
+                );
+
+            await _repository.UpdateAsync(id, currency);
 
             return new CurrencyDto
             {
@@ -162,7 +175,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<bool> DeleteCurrencyAsync(Guid id)
         {
-            var currency = await _context.Currencies.FindAsync(id)
+            var currency = await _repository.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Currency not found.");
 
             // Do not allow deleting the local currency
@@ -171,37 +184,21 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 throw new InvalidOperationException("Cannot delete the active local currency. Designate another currency as local before deleting this one.");
             }
 
-            var hasRelatedEntities = await _context.Suppliers.AnyAsync(s => s.CurrencyId == id) ||
-                                     await _context.ExchangeRates.AnyAsync(r => r.SourceCurrencyId == id || r.TargetCurrencyId == id) ||
-                                     await _context.ImportOrders.AnyAsync(o => o.CurrencyId == id) ||
-                                     await _context.ImportOrderExpenses.AnyAsync(e => e.CurrencyId == id) ||
-                                     await _context.LandedCostCalculations.AnyAsync(c => c.LocalCurrencyId == id);
-
-            if (hasRelatedEntities)
+            if (await _repository.HasRelatedEntitiesAsync(id))
             {
-                // Soft delete: deactivate
-                currency.Update(currency.Name, currency.ISOCode, currency.Symbol, currency.IsLocalCurrency, false);
-                await _context.SaveChangesAsync();
-                return true;
+                await _repository.SoftDeleteAsync(id);
+                return false; // por ahora siempre se desactivará, chequear despues
             }
             else
             {
-                // Hard delete: remove
-                _context.Currencies.Remove(currency);
-                await _context.SaveChangesAsync();
+                await _repository.DeleteAsync(id);
                 return true;
             }
         }
 
         private async Task DeactivateExistingLocalCurrenciesAsync(Guid? exceptId = null)
         {
-            var query = _context.Currencies.Where(c => c.IsLocalCurrency);
-            if (exceptId.HasValue)
-            {
-                query = query.Where(c => c.Id != exceptId.Value);
-            }
-
-            var existingLocals = await query.ToListAsync();
+            var existingLocals = await _repository.GetLocalCurrenciesAsync(exceptId);
             foreach (var localCurrency in existingLocals)
             {
                 localCurrency.MarkAsLocal(false);

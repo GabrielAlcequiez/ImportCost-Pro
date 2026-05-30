@@ -21,5 +21,27 @@ namespace ImportCostPro.Database.Repositories.Implementations
 
             return await query.ToListAsync();
         }
+
+        public async Task<bool> HasRelatedEntitiesAsync(Guid id)
+        {
+            return await _context.Suppliers.AnyAsync(s => s.CurrencyId == id) ||
+                   await _context.ExchangeRates.AnyAsync(r => r.SourceCurrencyId == id || r.TargetCurrencyId == id) ||
+                   await _context.ImportOrders.AnyAsync(o => o.CurrencyId == id) ||
+                   await _context.ImportOrderExpenses.AnyAsync(e => e.CurrencyId == id) ||
+                   await _context.LandedCostCalculations.AnyAsync(c => c.LocalCurrencyId == id);
+        }
+
+        public async Task<Currency?> SoftDeleteAsync(Guid id)
+        {
+            var entity = await _context.Set<Currency>().FindAsync(id);
+            if (entity != null)
+            {
+                entity.Update(entity.Name, entity.ISOCode, entity.Symbol, entity.IsLocalCurrency, false);
+                await _context.SaveChangesAsync();
+                return entity;
+            }
+            return null;
+        }
+
     }
 }
