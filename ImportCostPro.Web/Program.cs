@@ -1,12 +1,15 @@
-using ImportCostPro.Database.Entities.Enums;
+using ImportCostPro.Database;
 using ImportCostPro.Database.Repositories.Implementations;
 using ImportCostPro.Database.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 // Ya se encarga de instanciar todos los repos internament
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
