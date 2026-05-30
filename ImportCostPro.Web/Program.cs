@@ -1,3 +1,7 @@
+using FluentValidation;
+using ImportCostPro.BusinessLogic.Services.Implementations;
+using ImportCostPro.BusinessLogic.Services.Interfaces;
+using ImportCostPro.BusinessLogic.Validators.Country;
 using ImportCostPro.Database;
 using ImportCostPro.Database.Repositories.Implementations;
 using ImportCostPro.Database.Repositories.Interfaces;
@@ -10,8 +14,12 @@ builder.Services.AddControllersWithViews();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
-// Ya se encarga de instanciar todos los repos internament
+// Ya se encarga de instanciar todos los repos internamente
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// lo mismo acá, similar a la cuestión del db context
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCountryDtoValidator>(ServiceLifetime.Transient);
+builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
 var app = builder.Build();
 

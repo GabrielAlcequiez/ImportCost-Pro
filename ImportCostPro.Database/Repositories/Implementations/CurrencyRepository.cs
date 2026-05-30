@@ -43,5 +43,20 @@ namespace ImportCostPro.Database.Repositories.Implementations
             return null;
         }
 
+        public async Task<bool> ExistsByNameAsync(string name, Guid? excludeId = null)
+        {
+            var query = _context.Currencies.Where(c => c.Name == name);
+            if (excludeId.HasValue)
+                query = query.Where(c => c.Id != excludeId.Value);
+            return await query.AnyAsync();
+        }
+
+        public async Task<bool> ExistsByISOCodeAsync(string isoCode, Guid? excludeId = null)
+        {
+            var query = _context.Currencies.Where(c => c.ISOCode == isoCode);
+            if (excludeId.HasValue)
+                query = query.Where(c => c.Id != excludeId.Value);
+            return await query.AnyAsync();
+        }
     }
 }

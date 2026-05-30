@@ -1,3 +1,4 @@
+using FluentValidation;
 using ImportCostPro.BusinessLogic.DTOs.Country;
 using ImportCostPro.BusinessLogic.Services.Interfaces;
 using ImportCostPro.Database.Entities;
@@ -8,10 +9,17 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
     public class CountryService : ICountryService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IValidator<CreateCountryDto> _createValidator;
+        private readonly IValidator<UpdateCountryDto> _updateValidator;
 
-        public CountryService(IUnitOfWork unitOfWork)
+        public CountryService(
+            IUnitOfWork unitOfWork,
+            IValidator<CreateCountryDto> createValidator,
+            IValidator<UpdateCountryDto> updateValidator)
         {
             _unitOfWork = unitOfWork;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public async Task<List<CountryDto>> GetAllCountriesAsync()
@@ -49,24 +57,10 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         public async Task<CountryDto> CreateCountryAsync(CreateCountryDto countryCreateDto)
         {
             ArgumentNullException.ThrowIfNull(countryCreateDto);
-
-            if (string.IsNullOrWhiteSpace(countryCreateDto.Name))
-                throw new ArgumentException("Name cannot be null or empty.");
-
-            if (string.IsNullOrWhiteSpace(countryCreateDto.ISOCode))
-                throw new ArgumentException("ISOCode cannot be null or empty.");
+            await _createValidator.ValidateAndThrowAsync(countryCreateDto);
 
             var nameTrimmed = countryCreateDto.Name.Trim();
             var isoCodeNormalized = countryCreateDto.ISOCode.Trim().ToUpperInvariant();
-
-            if (isoCodeNormalized.Length < 2 || isoCodeNormalized.Length > 3)
-                throw new ArgumentException("ISOCode must be 2 or 3 characters long.");
-
-            // if (await _repository.GetAllAsync(c => c.Name.ToLower() == nameTrimmed.ToLower()))
-            //     throw new InvalidOperationException("A country with the same name already exists.");
-
-            // if (await _context.Countries.AnyAsync(c => c.ISOCode == isoCodeNormalized))
-            //     throw new InvalidOperationException("A country with the same ISO code already exists.");
 
             var newCountry = new Country(nameTrimmed, isoCodeNormalized);
             await _unitOfWork.Countries.AddAsync(newCountry);
@@ -84,30 +78,13 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         public async Task<CountryDto> UpdateCountryAsync(Guid id, UpdateCountryDto countryUpdateDto)
         {
             ArgumentNullException.ThrowIfNull(countryUpdateDto);
+            await _updateValidator.ValidateAndThrowAsync(countryUpdateDto);
 
             var country = await _unitOfWork.Countries.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Country not found.");
 
-            if (string.IsNullOrWhiteSpace(countryUpdateDto.Name))
-                throw new ArgumentException("Name cannot be null or empty.");
-
-            if (string.IsNullOrWhiteSpace(countryUpdateDto.ISOCode))
-                throw new ArgumentException("ISOCode cannot be null or empty.");
-
             var nameTrimmed = countryUpdateDto.Name.Trim();
             var isoCodeNormalized = countryUpdateDto.ISOCode.Trim().ToUpperInvariant();
-
-            if (isoCodeNormalized.Length < 2 || isoCodeNormalized.Length > 3)
-                throw new ArgumentException("ISOCode must be 2 or 3 characters long.");
-
-            // // Check uniqueness of Name excluding current record
-            // if (await _context.Countries.AnyAsync(c => c.Id != id && c.Name.ToLower() == nameTrimmed.ToLower()))
-            //     throw new InvalidOperationException("A country with the same name already exists.");
-
-            // // Check uniqueness of ISO code excluding current record
-            // if (await _context.Countries.AnyAsync(c => c.Id != id && c.ISOCode == isoCodeNormalized))
-            //     throw new InvalidOperationException("A country with the same ISO code already exists.");
-
 
             country.Update(
                 countryUpdateDto.Name.Trim(),

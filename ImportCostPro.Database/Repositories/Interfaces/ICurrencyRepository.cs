@@ -6,8 +6,9 @@ namespace ImportCostPro.Database.Repositories.Interfaces
     {
         Task<IReadOnlyList<Currency>> GetLocalCurrenciesAsync(Guid? exceptId = null);
         Task<Currency?> SoftDeleteAsync(Guid id);
-
         Task<bool> HasRelatedEntitiesAsync(Guid id);
+        Task<bool> ExistsByNameAsync(string name, Guid? excludeId = null);
+        Task<bool> ExistsByISOCodeAsync(string isoCode, Guid? excludeId = null);
 
     }
 }

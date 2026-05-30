@@ -1,3 +1,4 @@
+using FluentValidation;
 using ImportCostPro.BusinessLogic.DTOs.Currency;
 using ImportCostPro.BusinessLogic.Services.Interfaces;
 using ImportCostPro.Database;
@@ -10,9 +11,17 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
     public class CurrencyService : ICurrencyService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CurrencyService(IUnitOfWork unitOfWork)
+        private readonly IValidator<CreateCurrencyDto> _createValidator;
+        private readonly IValidator<UpdateCurrencyDto> _updateValidator;
+
+        public CurrencyService(
+            IUnitOfWork unitOfWork,
+            IValidator<CreateCurrencyDto> createValidator,
+            IValidator<UpdateCurrencyDto> updateValidator)
         {
             _unitOfWork = unitOfWork;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         public async Task<List<CurrencyDto>> GetAllCurrenciesAsync()
@@ -54,29 +63,11 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         public async Task<CurrencyDto> CreateCurrencyAsync(CreateCurrencyDto currencyCreateDto)
         {
             ArgumentNullException.ThrowIfNull(currencyCreateDto);
-
-            if (string.IsNullOrWhiteSpace(currencyCreateDto.Name))
-                throw new ArgumentException("Name cannot be null or empty.");
-
-            if (string.IsNullOrWhiteSpace(currencyCreateDto.ISOCode))
-                throw new ArgumentException("ISOCode cannot be null or empty.");
-
-            if (string.IsNullOrWhiteSpace(currencyCreateDto.Symbol))
-                throw new ArgumentException("Symbol cannot be null or empty.");
+            await _createValidator.ValidateAndThrowAsync(currencyCreateDto);
 
             var nameTrimmed = currencyCreateDto.Name.Trim();
             var isoCodeNormalized = currencyCreateDto.ISOCode.Trim().ToUpperInvariant();
             var symbolTrimmed = currencyCreateDto.Symbol.Trim();
-
-            if (isoCodeNormalized.Length != 3)
-                throw new ArgumentException("ISOCode must be exactly 3 characters long.");
-
-            // Check uniqueness of Name and ISOCode
-            // if (await _context.Currencies.AnyAsync(c => c.Name.ToLower() == nameTrimmed.ToLower()))
-            //     throw new InvalidOperationException("A currency with the same name already exists.");
-
-            // if (await _context.Currencies.AnyAsync(c => c.ISOCode == isoCodeNormalized))
-            //     throw new InvalidOperationException("A currency with the same ISO code already exists.");
 
             // If this currency is marked as local, ensure it's the only one
             if (currencyCreateDto.IsLocalCurrency)
@@ -103,42 +94,10 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         public async Task<CurrencyDto> UpdateCurrencyAsync(Guid id, UpdateCurrencyDto currencyUpdateDto)
         {
             ArgumentNullException.ThrowIfNull(currencyUpdateDto);
+            await _updateValidator.ValidateAndThrowAsync(currencyUpdateDto);
 
             var currency = await _unitOfWork.Currencies.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Currency not found.");
-
-            if (string.IsNullOrWhiteSpace(currencyUpdateDto.Name))
-                throw new ArgumentException("Name cannot be null or empty.");
-
-            if (string.IsNullOrWhiteSpace(currencyUpdateDto.ISOCode))
-                throw new ArgumentException("ISOCode cannot be null or empty.");
-
-            if (string.IsNullOrWhiteSpace(currencyUpdateDto.Symbol))
-                throw new ArgumentException("Symbol cannot be null or empty.");
-
-            // var nameTrimmed = currencyUpdateDto.Name.Trim();
-            // var isoCodeNormalized = currencyUpdateDto.ISOCode.Trim().ToUpperInvariant();
-            // var symbolTrimmed = currencyUpdateDto.Symbol.Trim();
-
-            // if (isoCodeNormalized.Length != 3)
-            //     throw new ArgumentException("ISOCode must be exactly 3 characters long.");
-
-            // // Check uniqueness of Name and ISOCode excluding current record
-            // if (await _context.Currencies.AnyAsync(c => c.Id != id && c.Name.ToLower() == nameTrimmed.ToLower()))
-            //     throw new InvalidOperationException("A currency with the same name already exists.");
-
-            // if (await _context.Currencies.AnyAsync(c => c.Id != id && c.ISOCode == isoCodeNormalized))
-            //     throw new InvalidOperationException("A currency with the same ISO code already exists.");
-
-            // If we are deactivating local status on this currency, we must ensure another local currency exists
-            // if (currency.IsLocalCurrency && !currencyUpdateDto.IsLocalCurrency)
-            // {
-            //     var otherLocalExists = await _context.Currencies.AnyAsync(c => c.Id != id && c.IsLocalCurrency && c.IsActive);
-            //     if (!otherLocalExists)
-            //     {
-            //         throw new InvalidOperationException("Cannot unset local status on the only active local currency. You must designate another local currency first.");
-            //     }
-            // }
 
             // If we are deactivating a currency that is local, check if another local currency is active
             if (!currencyUpdateDto.IsActive && currencyUpdateDto.IsLocalCurrency)
