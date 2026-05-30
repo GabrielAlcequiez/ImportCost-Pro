@@ -6,17 +6,23 @@ using ImportCostPro.BusinessLogic.DTOs.Country;
 using ImportCostPro.BusinessLogic.Services.Interfaces;
 using ImportCostPro.Database;
 using ImportCostPro.Database.Entities;
+using ImportCostPro.Database.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ImportCostPro.BusinessLogic.Services.Implementations
 {
-    public class CountryService(AppDbContext context) : ICountryService
+    public class CountryService : ICountryService
     {
-        private readonly AppDbContext _context = context;
+        private readonly ICountryRepository _repository;
+
+        public CountryService(ICountryRepository repository)
+        {
+            _repository = repository;
+        }
 
         public async Task<List<CountryDto>> GetAllCountriesAsync()
         {
-            var countries = await _context.Countries.ToListAsync();
+            var countries = await _repository.GetAllAsync();
             var countryDtos = new List<CountryDto>();
 
             foreach (var country in countries)
@@ -34,7 +40,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<CountryDto?> GetCountryByIdAsync(Guid id)
         {
-            var country = await _context.Countries.FindAsync(id);
+            var country = await _repository.GetByIdAsync(id);
             if (country == null) return null;
 
             return new CountryDto
@@ -49,7 +55,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         public async Task<CountryDto> CreateCountryAsync(CreateCountryDto countryCreateDto)
         {
             ArgumentNullException.ThrowIfNull(countryCreateDto);
-            
+
             if (string.IsNullOrWhiteSpace(countryCreateDto.Name))
                 throw new ArgumentException("Name cannot be null or empty.");
 
@@ -62,15 +68,14 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             if (isoCodeNormalized.Length < 2 || isoCodeNormalized.Length > 3)
                 throw new ArgumentException("ISOCode must be 2 or 3 characters long.");
 
-            if (await _context.Countries.AnyAsync(c => c.Name.ToLower() == nameTrimmed.ToLower()))
-                throw new InvalidOperationException("A country with the same name already exists.");
+            // if (await _repository.GetAllAsync(c => c.Name.ToLower() == nameTrimmed.ToLower()))
+            //     throw new InvalidOperationException("A country with the same name already exists.");
 
-            if (await _context.Countries.AnyAsync(c => c.ISOCode == isoCodeNormalized))
-                throw new InvalidOperationException("A country with the same ISO code already exists.");
+            // if (await _context.Countries.AnyAsync(c => c.ISOCode == isoCodeNormalized))
+            //     throw new InvalidOperationException("A country with the same ISO code already exists.");
 
             var newCountry = new Country(nameTrimmed, isoCodeNormalized);
-            _context.Countries.Add(newCountry);
-            await _context.SaveChangesAsync();
+            await _repository.AddAsync(newCountry);
 
             return new CountryDto
             {
@@ -85,7 +90,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         {
             ArgumentNullException.ThrowIfNull(countryUpdateDto);
 
-            var country = await _context.Countries.FindAsync(id) 
+            var country = await _repository.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Country not found.");
 
             if (string.IsNullOrWhiteSpace(countryUpdateDto.Name))
@@ -100,17 +105,21 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             if (isoCodeNormalized.Length < 2 || isoCodeNormalized.Length > 3)
                 throw new ArgumentException("ISOCode must be 2 or 3 characters long.");
 
-            // Check uniqueness of Name excluding current record
-            if (await _context.Countries.AnyAsync(c => c.Id != id && c.Name.ToLower() == nameTrimmed.ToLower()))
-                throw new InvalidOperationException("A country with the same name already exists.");
+            // // Check uniqueness of Name excluding current record
+            // if (await _context.Countries.AnyAsync(c => c.Id != id && c.Name.ToLower() == nameTrimmed.ToLower()))
+            //     throw new InvalidOperationException("A country with the same name already exists.");
 
-            // Check uniqueness of ISO code excluding current record
-            if (await _context.Countries.AnyAsync(c => c.Id != id && c.ISOCode == isoCodeNormalized))
-                throw new InvalidOperationException("A country with the same ISO code already exists.");
+            // // Check uniqueness of ISO code excluding current record
+            // if (await _context.Countries.AnyAsync(c => c.Id != id && c.ISOCode == isoCodeNormalized))
+            //     throw new InvalidOperationException("A country with the same ISO code already exists.");
 
-            country.Update(nameTrimmed, isoCodeNormalized, countryUpdateDto.IsActive);
-            await _context.SaveChangesAsync();
 
+            country.Update(
+                countryUpdateDto.Name.Trim(), 
+                countryUpdateDto.ISOCode.Trim().ToUpperInvariant(), 
+                country.IsActive);
+
+            await _repository.UpdateAsync(id, country);
             return new CountryDto
             {
                 Id = country.Id,
@@ -122,26 +131,18 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<bool> DeleteCountryAsync(Guid id)
         {
-            var country = await _context.Countries.FindAsync(id) 
+            var country = await _repository.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Country not found.");
 
-            var hasRelatedEntities = await _context.Suppliers.AnyAsync(s => s.CountryId == id) ||
-                                     await _context.Importers.AnyAsync(i => i.CountryId == id) ||
-                                     await _context.Products.AnyAsync(p => p.CountryId == id) ||
-                                     await _context.ImportOrders.AnyAsync(o => o.CountryId == id);
 
-            if (hasRelatedEntities)
+            if(await _repository.HasRelatedEntitiesAsync(id))
             {
-                // Soft-delete: deactivate
-                country.Update(country.Name, country.ISOCode, false);
-                await _context.SaveChangesAsync();
-                return true;
+                await _repository.SoftDeleteAsync(id);
+                return false; // por ahora siempre se desactivará, chequear despues
             }
             else
             {
-                // Hard-delete: remove
-                _context.Countries.Remove(country);
-                await _context.SaveChangesAsync();
+                await _repository.DeleteAsync(id);
                 return true;
             }
         }
