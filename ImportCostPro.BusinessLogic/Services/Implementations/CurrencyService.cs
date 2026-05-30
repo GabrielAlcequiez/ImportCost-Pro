@@ -9,15 +9,15 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 {
     public class CurrencyService : ICurrencyService
     {
-        private readonly ICurrencyRepository _repository;
-        public CurrencyService(ICurrencyRepository repository)
+        private readonly IUnitOfWork _unitOfWork;
+        public CurrencyService(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<CurrencyDto>> GetAllCurrenciesAsync()
         {
-            var currencies = await _repository.GetAllAsync();
+            var currencies = await _unitOfWork.Currencies.GetAllAsync();
             var dtos = new List<CurrencyDto>();
 
             foreach (var currency in currencies)
@@ -37,7 +37,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<CurrencyDto?> GetCurrencyByIdAsync(Guid id)
         {
-            var currency = await _repository.GetByIdAsync(id);
+            var currency = await _unitOfWork.Currencies.GetByIdAsync(id);
             if (currency == null) return null;
 
             return new CurrencyDto
@@ -86,7 +86,8 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
 
             var newCurrency = new Currency(nameTrimmed, isoCodeNormalized, symbolTrimmed, currencyCreateDto.IsLocalCurrency);
-            await _repository.AddAsync(newCurrency);
+            await _unitOfWork.Currencies.AddAsync(newCurrency);
+            await _unitOfWork.CompleteAsync();
 
             return new CurrencyDto
             {
@@ -103,7 +104,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         {
             ArgumentNullException.ThrowIfNull(currencyUpdateDto);
 
-            var currency = await _repository.GetByIdAsync(id)
+            var currency = await _unitOfWork.Currencies.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Currency not found.");
 
             if (string.IsNullOrWhiteSpace(currencyUpdateDto.Name))
@@ -160,7 +161,8 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 currencyUpdateDto.IsActive
                 );
 
-            await _repository.UpdateAsync(id, currency);
+            await _unitOfWork.CompleteAsync();
+
 
             return new CurrencyDto
             {
@@ -175,7 +177,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<bool> DeleteCurrencyAsync(Guid id)
         {
-            var currency = await _repository.GetByIdAsync(id)
+            var currency = await _unitOfWork.Currencies.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Currency not found.");
 
             // Do not allow deleting the local currency
@@ -184,21 +186,25 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 throw new InvalidOperationException("Cannot delete the active local currency. Designate another currency as local before deleting this one.");
             }
 
-            if (await _repository.HasRelatedEntitiesAsync(id))
+            bool isSoftDelete;
+            if (await _unitOfWork.Currencies.HasRelatedEntitiesAsync(id))
             {
-                await _repository.SoftDeleteAsync(id);
-                return false; // por ahora siempre se desactivará, chequear despues
+                await _unitOfWork.Currencies.SoftDeleteAsync(id);
+                isSoftDelete = true;
             }
             else
             {
-                await _repository.DeleteAsync(id);
-                return true;
+                await _unitOfWork.Currencies.DeleteAsync(id);
+                isSoftDelete = false;
             }
+
+            await _unitOfWork.CompleteAsync();
+            return isSoftDelete;
         }
 
         private async Task DeactivateExistingLocalCurrenciesAsync(Guid? exceptId = null)
         {
-            var existingLocals = await _repository.GetLocalCurrenciesAsync(exceptId);
+            var existingLocals = await _unitOfWork.Currencies.GetLocalCurrenciesAsync(exceptId);
             foreach (var localCurrency in existingLocals)
             {
                 localCurrency.MarkAsLocal(false);

@@ -5,7 +5,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-         protected readonly AppDbContext _context;
+        protected readonly AppDbContext _context;
 
         public BaseRepository(AppDbContext context)
         {
@@ -14,18 +14,15 @@ namespace ImportCostPro.Database.Repositories.Implementations
         public async Task<T> AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
-            await _context.SaveChangesAsync();
             return entity;
         }
 
         public async Task<T?> UpdateAsync(Guid id, T entity)
         {
             var entry = await _context.Set<T>().FindAsync(id);
-
             if (entry != null)
             {
                 _context.Entry(entry).CurrentValues.SetValues(entity);
-                await _context.SaveChangesAsync();
                 return entry;
             }
             return null;
@@ -37,7 +34,6 @@ namespace ImportCostPro.Database.Repositories.Implementations
             if (entry != null)
             {
                 _context.Set<T>().Remove(entry);
-                await _context.SaveChangesAsync();
                 return true;
             }
             return false;

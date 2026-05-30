@@ -1,0 +1,11 @@
+namespace ImportCostPro.Database.Repositories.Interfaces
+{
+    // Creada exclusivamente para controlar el save changes async, asi tener mas control en transacciones
+    public interface IUnitOfWork : IDisposable
+    {
+        ICountryRepository Countries {get;}
+        ICurrencyRepository Currencies {get;}
+
+        Task<int> CompleteAsync();
+    }
+}

@@ -1,7 +1,14 @@
+using ImportCostPro.Database.Entities.Enums;
+using ImportCostPro.Database.Repositories.Implementations;
+using ImportCostPro.Database.Repositories.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Ya se encarga de instanciar todos los repos internament
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 

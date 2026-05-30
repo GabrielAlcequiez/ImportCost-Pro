@@ -1,28 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ImportCostPro.BusinessLogic.DTOs.Country;
 using ImportCostPro.BusinessLogic.Services.Interfaces;
-using ImportCostPro.Database;
 using ImportCostPro.Database.Entities;
 using ImportCostPro.Database.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace ImportCostPro.BusinessLogic.Services.Implementations
 {
     public class CountryService : ICountryService
     {
-        private readonly ICountryRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CountryService(ICountryRepository repository)
+        public CountryService(IUnitOfWork unitOfWork)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<CountryDto>> GetAllCountriesAsync()
         {
-            var countries = await _repository.GetAllAsync();
+            var countries = await _unitOfWork.Countries.GetAllAsync();
             var countryDtos = new List<CountryDto>();
 
             foreach (var country in countries)
@@ -40,7 +34,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<CountryDto?> GetCountryByIdAsync(Guid id)
         {
-            var country = await _repository.GetByIdAsync(id);
+            var country = await _unitOfWork.Countries.GetByIdAsync(id);
             if (country == null) return null;
 
             return new CountryDto
@@ -75,7 +69,8 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             //     throw new InvalidOperationException("A country with the same ISO code already exists.");
 
             var newCountry = new Country(nameTrimmed, isoCodeNormalized);
-            await _repository.AddAsync(newCountry);
+            await _unitOfWork.Countries.AddAsync(newCountry);
+            await _unitOfWork.CompleteAsync();
 
             return new CountryDto
             {
@@ -90,7 +85,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         {
             ArgumentNullException.ThrowIfNull(countryUpdateDto);
 
-            var country = await _repository.GetByIdAsync(id)
+            var country = await _unitOfWork.Countries.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Country not found.");
 
             if (string.IsNullOrWhiteSpace(countryUpdateDto.Name))
@@ -115,11 +110,12 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
 
             country.Update(
-                countryUpdateDto.Name.Trim(), 
-                countryUpdateDto.ISOCode.Trim().ToUpperInvariant(), 
+                countryUpdateDto.Name.Trim(),
+                countryUpdateDto.ISOCode.Trim().ToUpperInvariant(),
                 country.IsActive);
-
-            await _repository.UpdateAsync(id, country);
+            await _unitOfWork.CompleteAsync();
+            // Deshabilitada porque al pasarle ocn Update, y luego hacer UpdateAsync, se hacia consulta dos veces...
+            // await _unitOfWork.Countries.UpdateAsync(id, country);
             return new CountryDto
             {
                 Id = country.Id,
@@ -131,20 +127,23 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<bool> DeleteCountryAsync(Guid id)
         {
-            var country = await _repository.GetByIdAsync(id)
+            var country = await _unitOfWork.Countries.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Country not found.");
 
-
-            if(await _repository.HasRelatedEntitiesAsync(id))
+            bool isSoftDelete;
+            if (await _unitOfWork.Countries.HasRelatedEntitiesAsync(id))
             {
-                await _repository.SoftDeleteAsync(id);
-                return false; // por ahora siempre se desactivará, chequear despues
+                await _unitOfWork.Countries.SoftDeleteAsync(id);
+                isSoftDelete = true; // por ahora siempre se desactivará, chequear despues
             }
             else
             {
-                await _repository.DeleteAsync(id);
-                return true;
+                await _unitOfWork.Countries.DeleteAsync(id);
+                isSoftDelete = false;
             }
+
+            await _unitOfWork.CompleteAsync();
+            return isSoftDelete;
         }
     }
 }
