@@ -6,6 +6,7 @@ namespace ImportCostPro.Database.Repositories.Interfaces
         ICountryRepository Countries { get; }
         ICurrencyRepository Currencies { get; }
         IImporterRepository Importers { get; }
+        ISupplierRepository Suppliers { get; }
 
         Task<int> CompleteAsync();
     }

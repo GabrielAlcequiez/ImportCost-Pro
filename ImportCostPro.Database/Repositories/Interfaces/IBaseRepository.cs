@@ -7,6 +7,7 @@ namespace ImportCostPro.Database.Repositories.Interfaces
         Task<bool> DeleteAsync(Guid id);
         Task<IReadOnlyList<T>> GetAllAsync();
         Task<T?> GetByIdAsync(Guid id);
+        IQueryable<T> AsQueryable();
 
     }
 }
