@@ -10,11 +10,14 @@ namespace ImportCostPro.Database.Repositories.Implementations
         public ICountryRepository Countries { get; }
         public ICurrencyRepository Currencies { get; }
 
+        public IImporterRepository Importers { get; } 
+
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
             Countries = new CountryRepository(_context);
             Currencies = new CurrencyRepository(_context);
+            Importers = new ImporterRepository(_context);
         }
         public async Task<int> CompleteAsync()
         {
