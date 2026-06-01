@@ -14,6 +14,10 @@ namespace ImportCostPro.Database.Repositories.Implementations
 
         public ISupplierRepository Suppliers { get; }
 
+
+        //Pon lo tuyo antes de esto  (para que vaya en orden) y borra este comentario cuando lo hagas
+        public ITaxConfigurationRepository TaxConfigurations { get; }
+
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
@@ -21,6 +25,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
             Currencies = new CurrencyRepository(_context);
             Importers = new ImporterRepository(_context);
             Suppliers = new SupplierRepository(_context);
+            TaxConfigurations = new TaxConfigurationRepository(_context);
         }
         public async Task<int> CompleteAsync()
         {
