@@ -10,7 +10,9 @@ namespace ImportCostPro.Database.Repositories.Implementations
         public ICountryRepository Countries { get; }
         public ICurrencyRepository Currencies { get; }
 
-        public IImporterRepository Importers { get; } 
+        public IImporterRepository Importers { get; }
+
+        public ISupplierRepository Suppliers { get; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -18,6 +20,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
             Countries = new CountryRepository(_context);
             Currencies = new CurrencyRepository(_context);
             Importers = new ImporterRepository(_context);
+            Suppliers = new SupplierRepository(_context);
         }
         public async Task<int> CompleteAsync()
         {
