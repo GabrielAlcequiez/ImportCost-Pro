@@ -23,6 +23,7 @@ builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<IImporterService, ImporterService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<ITaxConfigurationService, TaxConfigurationService>();
+builder.Services.AddScoped<IImportOrderService, ImportOrderService>();
 
 var app = builder.Build();
 
