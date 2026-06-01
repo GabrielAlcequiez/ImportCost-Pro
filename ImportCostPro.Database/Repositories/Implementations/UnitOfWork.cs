@@ -13,6 +13,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
         public IImporterRepository Importers { get; }
 
         public ISupplierRepository Suppliers { get; }
+        public IImportOrderRepository ImportOrders { get; }
 
 
         //Pon lo tuyo antes de esto  (para que vaya en orden) y borra este comentario cuando lo hagas
@@ -25,6 +26,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
             Currencies = new CurrencyRepository(_context);
             Importers = new ImporterRepository(_context);
             Suppliers = new SupplierRepository(_context);
+            ImportOrders = new ImportOrderRepository(_context);
             TaxConfigurations = new TaxConfigurationRepository(_context);
         }
         public async Task<int> CompleteAsync()
