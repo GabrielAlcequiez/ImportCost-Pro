@@ -20,6 +20,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateCountryDtoValidator>(ServiceLifetime.Transient);
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+builder.Services.AddScoped<IImporterService, ImporterService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<ITaxConfigurationService, TaxConfigurationService>();
 
 var app = builder.Build();
 
