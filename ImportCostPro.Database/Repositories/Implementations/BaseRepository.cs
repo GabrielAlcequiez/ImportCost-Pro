@@ -48,5 +48,10 @@ namespace ImportCostPro.Database.Repositories.Implementations
         {
             return await _context.Set<T>().FindAsync(id);
         }
+
+        public IQueryable<T> AsQueryable()
+        {
+            return _context.Set<T>().AsNoTracking();
+        }
     }
 }
