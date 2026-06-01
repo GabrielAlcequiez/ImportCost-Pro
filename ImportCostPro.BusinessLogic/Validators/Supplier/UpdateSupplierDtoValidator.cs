@@ -14,7 +14,12 @@ namespace ImportCostPro.BusinessLogic.Validators.Supplier
 
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name cannot be null or empty")
-                .MaximumLength(150).WithMessage("Name cannot exceed 150 characters");
+                .MaximumLength(150).WithMessage("Name cannot exceed 150 characters")
+                .MustAsync(async(dto, name, ct ) =>
+                {
+                    bool exists = await unitOfWork.Suppliers.ExistsByNameAsync(name, dto.Id);
+                    return !exists;
+                }).WithMessage("This supplier name already exists.");
 
             RuleFor(x => x.CountryId)
                 .NotEmpty().WithMessage("Country cannot be null or empty, is required.")
@@ -43,10 +48,24 @@ namespace ImportCostPro.BusinessLogic.Validators.Supplier
             RuleFor(x => x.Telephone)
                 .MaximumLength(20).WithMessage("The telephone is too large.");
 
-            // PENDIENTE DE IMPLEMENTAR, RESTRICCIONES IMPORTANTES AL EDITAR
-            // SI YA TIENE ORDENES DE IMPORTACIÓN
-            // Y SIMILARES
+            RuleFor(x => x)
+                .MustAsync(async (dto, ct) =>
+                {
+                    var originalSupplier = await unitOfWork.Suppliers.GetByIdAsync(dto.Id);
+                    if (originalSupplier == null) return true;
 
+                    bool changingCountry = dto.CountryId != originalSupplier.CountryId;
+                    bool changingCurrency = dto.CurrencyId != originalSupplier.CurrencyId;
+
+                    if (changingCountry || changingCurrency)
+                    {
+                        bool hasOrders = await unitOfWork.Suppliers.HasRelatedEntitiesAsync(dto.Id);
+                        if (hasOrders) return false; // Falla la validación
+                    }
+
+                    return true;
+                })
+                .WithMessage("The country and main currency cannot be changed because it already has registered import orders.");
                 
         }
     }
