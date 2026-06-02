@@ -14,8 +14,11 @@ namespace ImportCostPro.Database.Repositories.Implementations
                 .Include(o => o.Supplier)
                 .Include(o => o.Country)
                 .Include(o => o.Currency)
-                .Include(o => o.Details).ThenInclude(d => d.Product)
-                .Include(o => o.Expenses).ThenInclude(e => e.Currency)
+                .Include(o => o.Details)
+                    .ThenInclude(d => d.Product)
+                      .ThenInclude(p => p.TariffCategory)
+                .Include(o => o.Expenses)
+                    .ThenInclude(e => e.Currency)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -27,15 +30,18 @@ namespace ImportCostPro.Database.Repositories.Implementations
                 .Include(o => o.Supplier)
                 .Include(o => o.Country)
                 .Include(o => o.Currency)
-                .Include(o => o.Details).ThenInclude(d => d.Product)
-                .Include(o => o.Expenses).ThenInclude(e => e.Currency)
+                .Include(o => o.Details)
+                    .ThenInclude(d => d.Product)
+                      .ThenInclude(p => p.TariffCategory)
+                .Include(o => o.Expenses)
+                    .ThenInclude(e => e.Currency)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task<bool> ExistsByOrderNumberAsync(string orderNumber, Guid? excludeId = null)
         {
             var query = _context.ImportOrders
-                .Where(o => o.OrderNumber.Equals(orderNumber.Trim(), StringComparison.CurrentCultureIgnoreCase));
+                .Where(o => o.OrderNumber == orderNumber.Trim().ToUpper());
             if (excludeId.HasValue)
                 query = query.Where(o => o.Id != excludeId.Value);
             return await query.AnyAsync();

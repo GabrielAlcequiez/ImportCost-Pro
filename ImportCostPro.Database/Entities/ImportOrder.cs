@@ -17,7 +17,7 @@ namespace ImportCostPro.Database.Entities
         public Guid CurrencyId { get; private set; }
         public decimal ExchangeRateValue { get; private set; }
 
-        
+
 
         // Navigation Properties
         public Importer Importer { get; private set; } = null!;
@@ -68,7 +68,7 @@ namespace ImportCostPro.Database.Entities
             ExchangeRateValue = exchangeRateValue;
             TransportMode = transportMode;
         }
-        
+
 
         // Transition from Calculated to Closed
         public void CloseOrder()
@@ -86,6 +86,13 @@ namespace ImportCostPro.Database.Entities
                 throw new InvalidOperationException("Una orden Cerrada ya no puede ser cancelada.");
 
             Status = ImportOrderStatus.Cancelled;
+        }
+        // Transition from Open to Calculated after a landed cost calculation is saved
+        public void MarkAsCalculated()
+        {
+            if (Status != ImportOrderStatus.Open)
+                throw new InvalidOperationException("Only Open orders can be marked as Calculated.");
+            Status = ImportOrderStatus.Calculated;
         }
     }
 }

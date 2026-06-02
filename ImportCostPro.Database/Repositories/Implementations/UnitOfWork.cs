@@ -13,10 +13,12 @@ namespace ImportCostPro.Database.Repositories.Implementations
         public IImporterRepository Importers { get; }
 
         public ISupplierRepository Suppliers { get; }
-        public IImportOrderRepository ImportOrders { get; }
+
 
 
         //Pon lo tuyo antes de esto  (para que vaya en orden) y borra este comentario cuando lo hagas
+        public IImportOrderRepository ImportOrders { get; }
+        public ILandedCostCalculationRepository LandedCostCalculations { get; }
         public ITaxConfigurationRepository TaxConfigurations { get; }
 
         public UnitOfWork(AppDbContext context)
@@ -27,6 +29,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
             Importers = new ImporterRepository(_context);
             Suppliers = new SupplierRepository(_context);
             ImportOrders = new ImportOrderRepository(_context);
+            LandedCostCalculations = new LandedCostCalculationRepository(_context);
             TaxConfigurations = new TaxConfigurationRepository(_context);
         }
         public async Task<int> CompleteAsync()
