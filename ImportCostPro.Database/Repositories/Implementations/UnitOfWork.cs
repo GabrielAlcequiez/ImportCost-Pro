@@ -13,6 +13,8 @@ namespace ImportCostPro.Database.Repositories.Implementations
         public IImporterRepository Importers { get; }
 
         public ISupplierRepository Suppliers { get; }
+
+        public IProductRepository Products {get;}
         public IImportOrderRepository ImportOrders { get; }
 
 
@@ -26,6 +28,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
             Currencies = new CurrencyRepository(_context);
             Importers = new ImporterRepository(_context);
             Suppliers = new SupplierRepository(_context);
+            Products = new ProductRepository(_context);
             ImportOrders = new ImportOrderRepository(_context);
             TaxConfigurations = new TaxConfigurationRepository(_context);
         }
