@@ -15,6 +15,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
         public ISupplierRepository Suppliers { get; }
 
         public IProductRepository Products {get;}
+        public ITariffCategoryRepository TariffCategories {get;}
         public IImportOrderRepository ImportOrders { get; }
 
 
@@ -29,6 +30,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
             Importers = new ImporterRepository(_context);
             Suppliers = new SupplierRepository(_context);
             Products = new ProductRepository(_context);
+            TariffCategories = new TariffCategoryRepository(_context);
             ImportOrders = new ImportOrderRepository(_context);
             TaxConfigurations = new TaxConfigurationRepository(_context);
         }

@@ -8,6 +8,7 @@ namespace ImportCostPro.Database.Repositories.Interfaces
         IImporterRepository Importers { get; }
         ISupplierRepository Suppliers { get; }
         IProductRepository Products {get;}
+        ITariffCategoryRepository TariffCategories {get;}
         IImportOrderRepository ImportOrders { get; }
         ITaxConfigurationRepository TaxConfigurations { get; }
         Task<int> CompleteAsync();
