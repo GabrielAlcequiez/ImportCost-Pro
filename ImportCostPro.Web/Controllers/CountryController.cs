@@ -139,13 +139,26 @@ namespace ImportCostPro.Web.Controllers
         {
             try
             {
-                await _service.DeleteCountryAsync(id);
+                var wasSoftDeleted = await _service.DeleteCountryAsync(id);
+
+                if (wasSoftDeleted)
+                {
+                    TempData["DeleteMessage"] = "El país ha sido desactivado porque tiene registros asociados.";
+                    TempData["DeleteType"] = "soft";
+                }
+                else
+                {
+                    TempData["DeleteMessage"] = "El país ha sido eliminado permanentemente.";
+                    TempData["DeleteType"] = "hard";
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            catch (InvalidOperationException ex)
+            catch (KeyNotFoundException)
             {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Delete), new { id });
+                TempData["DeleteMessage"] = "El país no fue encontrado.";
+                TempData["DeleteType"] = "error";
+                return RedirectToAction(nameof(Index));
             }
         }
     }
