@@ -24,6 +24,7 @@ builder.Services.AddScoped<IImporterService, ImporterService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<ITaxConfigurationService, TaxConfigurationService>();
 builder.Services.AddScoped<IImportOrderService, ImportOrderService>();
+builder.Services.AddScoped<ILandedCostCalculationService, LandedCostCalculationService>();
 
 var app = builder.Build();
 
