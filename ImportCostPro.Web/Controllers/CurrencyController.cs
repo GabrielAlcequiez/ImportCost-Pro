@@ -147,13 +147,26 @@ namespace ImportCostPro.Web.Controllers
         {
             try
             {
-                await _service.DeleteCurrencyAsync(id);
+                var wasSoftDeleted = await _service.DeleteCurrencyAsync(id);
+
+                if (wasSoftDeleted)
+                {
+                    TempData["DeleteMessage"] = "La moneda ha sido desactivada porque tiene registros asociados.";
+                    TempData["DeleteType"] = "soft";
+                }
+                else
+                {
+                    TempData["DeleteMessage"] = "La moneda ha sido eliminada permanentemente.";
+                    TempData["DeleteType"] = "hard";
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            catch (InvalidOperationException ex)
+            catch (KeyNotFoundException)
             {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Delete), new { id });
+                TempData["DeleteMessage"] = "La moneda no fue encontrada.";
+                TempData["DeleteType"] = "error";
+                return RedirectToAction(nameof(Index));
             }
         }
     }

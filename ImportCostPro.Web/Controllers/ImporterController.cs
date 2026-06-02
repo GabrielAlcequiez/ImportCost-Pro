@@ -175,13 +175,26 @@ namespace ImportCostPro.Web.Controllers
         {
             try
             {
-                await _service.DeleteImporterAsync(id);
+                var wasSoftDeleted = await _service.DeleteImporterAsync(id);
+
+                if (wasSoftDeleted)
+                {
+                    TempData["DeleteMessage"] = "El importador ha sido desactivado porque tiene registros asociados.";
+                    TempData["DeleteType"] = "soft";
+                }
+                else
+                {
+                    TempData["DeleteMessage"] = "El importador ha sido eliminado permanentemente.";
+                    TempData["DeleteType"] = "hard";
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            catch (InvalidOperationException ex)
+            catch (KeyNotFoundException)
             {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Delete), new { id });
+                TempData["DeleteMessage"] = "El importador no fue encontrado.";
+                TempData["DeleteType"] = "error";
+                return RedirectToAction(nameof(Index));
             }
         }
 

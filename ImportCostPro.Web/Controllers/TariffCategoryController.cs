@@ -157,13 +157,26 @@ namespace ImportCostPro.Web.Controllers
         {
             try
             {
-                await _service.DeleteTariffCategoryAsync(id);
+                var wasSoftDeleted = await _service.DeleteTariffCategoryAsync(id);
+
+                if (wasSoftDeleted)
+                {
+                    TempData["DeleteMessage"] = "La categoría ha sido desactivada porque tiene registros asociados.";
+                    TempData["DeleteType"] = "soft";
+                }
+                else
+                {
+                    TempData["DeleteMessage"] = "La categoría ha sido eliminada permanentemente.";
+                    TempData["DeleteType"] = "hard";
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            catch (InvalidOperationException ex)
+            catch (KeyNotFoundException)
             {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Delete), new { id });
+                TempData["DeleteMessage"] = "La categoría no fue encontrada.";
+                TempData["DeleteType"] = "error";
+                return RedirectToAction(nameof(Index));
             }
         }
     }
