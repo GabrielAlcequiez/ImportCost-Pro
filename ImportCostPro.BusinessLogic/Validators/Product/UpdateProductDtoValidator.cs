@@ -49,7 +49,7 @@ namespace ImportCostPro.BusinessLogic.Validators.Product
                 .GreaterThan(0).WithMessage("Unit weight needs to be greater than 0.");
 
             RuleFor(x => x.UnitOfMeasure)
-                .NotEmpty().WithMessage("The Unit of Measure is required");
+                .IsInEnum().WithMessage("The Unit of Measure is not valid");
 
             RuleFor(x => x.Description)
                 .MaximumLength(250).WithMessage("Description cannot be greater than 250 characters");

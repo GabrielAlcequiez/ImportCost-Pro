@@ -50,7 +50,7 @@ namespace ImportCostPro.BusinessLogic.Validators.Product
 
 
             RuleFor(x => x.UnitOfMeasure)
-                .NotEmpty().WithMessage("The Unit of Measure is required");
+                .IsInEnum().WithMessage("The Unit of Measure is not valid");
 
 
             RuleFor(x => x.Description)
