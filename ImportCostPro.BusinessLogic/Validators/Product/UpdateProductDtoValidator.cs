@@ -35,15 +35,14 @@ namespace ImportCostPro.BusinessLogic.Validators.Product
                 })
                 .WithMessage("The country need to be already active");
 
-            // 4. Categoría arancelaria para el Update 
-            // RuleFor(x => x.TariffCategoryId)
-            //     .NotEmpty().WithMessage("La categoría arancelaria es requerida.")
-            //     .MustAsync(async (categoryId, cancellationToken) =>
-            //     {
-            //         var category = await unitOfWork.TariffCategories.GetByIdAsync(categoryId);
-            //         return category != null && category.IsActive;
-            //     })
-            //     .WithMessage("La categoría arancelaria seleccionada debe existir y estar activa.");
+            RuleFor(x => x.TariffCategoryId)
+                .NotEmpty().WithMessage("The tariff category is required")
+                .MustAsync(async (categoryId, cancellationToken) =>
+                {
+                    var category = await unitOfWork.TariffCategories.GetByIdAsync(categoryId);
+                    return category != null && category.IsActive;
+                })
+                .WithMessage("The selected tariff category needs to exists.");
 
             RuleFor(x => x.UnitWeight)
                 .NotNull().WithMessage("Unit weight is required")
