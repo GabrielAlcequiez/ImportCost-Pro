@@ -19,9 +19,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
         public ITariffCategoryRepository TariffCategories {get;}
         public IExchangeRateRepository ExchangeRates {get;}
         public IImportOrderRepository ImportOrders { get; }
-
-
-        //Pon lo tuyo antes de esto  (para que vaya en orden) y borra este comentario cuando lo hagas
+        public ILandedCostCalculationRepository LandedCostCalculations { get; }
         public ITaxConfigurationRepository TaxConfigurations { get; }
 
         public UnitOfWork(AppDbContext context)
@@ -35,6 +33,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
             TariffCategories = new TariffCategoryRepository(_context);
             ExchangeRates = new ExchangeRateRepository(_context);
             ImportOrders = new ImportOrderRepository(_context);
+            LandedCostCalculations = new LandedCostCalculationRepository(_context);
             TaxConfigurations = new TaxConfigurationRepository(_context);
         }
         public async Task<int> CompleteAsync()

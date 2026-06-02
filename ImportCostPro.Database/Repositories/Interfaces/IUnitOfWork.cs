@@ -11,6 +11,7 @@ namespace ImportCostPro.Database.Repositories.Interfaces
         ITariffCategoryRepository TariffCategories {get;}
         IExchangeRateRepository ExchangeRates {get;}
         IImportOrderRepository ImportOrders { get; }
+        ILandedCostCalculationRepository LandedCostCalculations { get; }
         ITaxConfigurationRepository TaxConfigurations { get; }
         Task<int> CompleteAsync();
     }
