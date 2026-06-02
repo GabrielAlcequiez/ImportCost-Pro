@@ -1,3 +1,4 @@
+using ImportCostPro.Database.Entities;
 using ImportCostPro.Database.Repositories.Interfaces;
 
 namespace ImportCostPro.Database.Repositories.Implementations
@@ -16,6 +17,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
 
         public IProductRepository Products {get;}
         public ITariffCategoryRepository TariffCategories {get;}
+        public IExchangeRateRepository ExchangeRates {get;}
         public IImportOrderRepository ImportOrders { get; }
 
 
@@ -31,6 +33,7 @@ namespace ImportCostPro.Database.Repositories.Implementations
             Suppliers = new SupplierRepository(_context);
             Products = new ProductRepository(_context);
             TariffCategories = new TariffCategoryRepository(_context);
+            ExchangeRates = new ExchangeRateRepository(_context);
             ImportOrders = new ImportOrderRepository(_context);
             TaxConfigurations = new TaxConfigurationRepository(_context);
         }
