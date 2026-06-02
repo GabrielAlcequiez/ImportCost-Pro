@@ -6,5 +6,8 @@ namespace ImportCostPro.Database.Repositories.Interfaces
     public interface IExchangeRateRepository : IBaseRepository<ExchangeRate>
     {
         Task<bool> ExistsActiveRateAsync(Guid sourceCurrencyId, Guid targetCurrencyId, DateTime effectiveDate, Guid? excludeId = null);
+        Task<bool> HasRelatedEntitiesAsync(Guid id);
+        Task<ExchangeRate?> SoftDeleteAsync(Guid id);
+
     }
 }
