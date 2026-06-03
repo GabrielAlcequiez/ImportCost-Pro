@@ -17,6 +17,7 @@ namespace ImportCostPro.Web.ViewModels.Importer
         [Required(ErrorMessage = "El país es requerido")]
         public Guid CountryId { get; set; }
 
+        [StringLength(20, ErrorMessage = "El teléfono no puede tener más de 20 caracteres")]
         public string? Phone { get; set; }
 
         [EmailAddress(ErrorMessage = "El correo no tiene un formato válido")]

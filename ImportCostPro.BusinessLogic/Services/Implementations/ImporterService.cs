@@ -128,6 +128,13 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             await _updateValidator.ValidateAndThrowAsync(dto);
 
             var importer = await _unitOfWork.Importers.GetByIdAsync(id) ?? throw new KeyNotFoundException("Importer not found");
+
+            if (importer.TaxId != dto.TaxId.Trim() &&
+                await _unitOfWork.Importers.HasRelatedEntitiesAsync(id))
+            {
+                throw new InvalidOperationException("No se puede modificar el RNC o identificación fiscal de este importador porque ya tiene órdenes de importación registradas.");
+            }
+
             importer.Update(
                  dto.Name.Trim(),
                  dto.TaxId.Trim(),

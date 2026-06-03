@@ -119,6 +119,11 @@ namespace ImportCostPro.Web.Controllers
 
                 return View(viewModel);
             }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(viewModel);
+            }
         }
 
         // GET: /Currency/Delete/{id}

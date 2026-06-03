@@ -145,6 +145,12 @@ namespace ImportCostPro.Web.Controllers
                 viewModel.Countries = await GetCountrySelectListAsync(viewModel.CountryId);
                 return View(viewModel);
             }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                viewModel.Countries = await GetCountrySelectListAsync(viewModel.CountryId);
+                return View(viewModel);
+            }
         }
 
         // GET: /Importer/Delete/{id}
