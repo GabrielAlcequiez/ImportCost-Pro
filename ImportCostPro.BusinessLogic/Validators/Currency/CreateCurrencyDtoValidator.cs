@@ -9,19 +9,19 @@ public class CreateCurrencyDtoValidator : AbstractValidator<CreateCurrencyDto>
     public CreateCurrencyDtoValidator(IUnitOfWork unitOfWork)
     {
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Name cannot be null or empty.")
+            .NotEmpty().WithMessage("El nombre es requerido.")
             .MustAsync(async (name, ct) =>
                 !await unitOfWork.Currencies.ExistsByNameAsync(name.Trim()))
-            .WithMessage("A currency with the same name already exists.");
+            .WithMessage("Ya existe una moneda con el mismo nombre.");
 
         RuleFor(x => x.ISOCode)
-            .NotEmpty().WithMessage("ISOCode cannot be null or empty.")
-            .Length(2, 3).WithMessage("ISOCode must be 2 or 3 characters long.")
+            .NotEmpty().WithMessage("El código ISO es requerido.")
+            .Length(2, 3).WithMessage("El código ISO debe tener 2 o 3 caracteres.")
             .MustAsync(async (isoCode, ct) =>
                 !await unitOfWork.Currencies.ExistsByISOCodeAsync(isoCode.Trim().ToUpperInvariant()))
-            .WithMessage("A currency with the same ISO code already exists.");
+            .WithMessage("Ya existe una moneda con el mismo código ISO.");
 
         RuleFor(x => x.Symbol)
-            .NotEmpty().WithMessage("Symbol cannot be null or empty.");
+            .NotEmpty().WithMessage("El símbolo es requerido.");
     }
 }

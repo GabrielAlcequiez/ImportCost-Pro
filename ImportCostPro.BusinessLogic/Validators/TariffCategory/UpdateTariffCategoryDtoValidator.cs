@@ -14,45 +14,45 @@ namespace ImportCostPro.BusinessLogic.Validators.TariffCategory
         public UpdateTariffCategoryDtoValidator(IUnitOfWork unitOfWork)
         {
             RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Category Id is required for updates.");
+                .NotEmpty().WithMessage("El ID de categoría es requerido para actualizar.");
 
             // 1. Código arancelario (Validando duplicados excluyendo el ID actual)
             RuleFor(x => x.TariffCode)
-                .NotEmpty().WithMessage("The tariff code is required.")
-                .MaximumLength(20).WithMessage("The tariff code cannot exceed 20 characters.")
+                .NotEmpty().WithMessage("El código arancelario es requerido.")
+                .MaximumLength(20).WithMessage("El código arancelario no puede exceder 20 caracteres.")
                 .MustAsync(async (dto, code, cancellationToken) =>
                 {
                     var cleanCode = code.Trim();
                     var exists = await unitOfWork.TariffCategories.ExistsByCodeAsync(cleanCode, dto.Id);
                     return !exists; 
                 })
-                .WithMessage("A tariff category with this code already exists.");
+                .WithMessage("Ya existe una categoría arancelaria con este código.");
 
             // 2. Nombre o descripción
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("The name or description is required.")
-                .MaximumLength(150).WithMessage("The name or description cannot exceed 150 characters.");
+                .NotEmpty().WithMessage("El nombre o descripción es requerido.")
+                .MaximumLength(150).WithMessage("El nombre o descripción no puede exceder 150 caracteres.");
 
             // 3. Porcentaje de arancel
             RuleFor(x => x.TariffPercentage)
-                .NotNull().WithMessage("The tariff percentage is required.")
-                .GreaterThanOrEqualTo(0).WithMessage("The tariff percentage must be greater than or equal to 0.")
-                .LessThanOrEqualTo(100).WithMessage("The tariff percentage cannot exceed 100.");
+                .NotNull().WithMessage("El porcentaje de arancel es requerido.")
+                .GreaterThanOrEqualTo(0).WithMessage("El porcentaje de arancel debe ser mayor o igual a 0.")
+                .LessThanOrEqualTo(100).WithMessage("El porcentaje de arancel no puede exceder 100.");
 
             // 4. Lógica condicional para el Impuesto Selectivo
             When(x => x.ApplyExciseTax == true, () =>
             {
                 RuleFor(x => x.ExciseTaxPercentage)
-                    .GreaterThan(0).WithMessage("If excise tax applies, the percentage must be greater than 0.")
-                    .LessThanOrEqualTo(100).WithMessage("If excise tax applies, the percentage cannot exceed 100.");
+                    .GreaterThan(0).WithMessage("Si aplica impuesto selectivo, el porcentaje debe ser mayor que 0.")
+                    .LessThanOrEqualTo(100).WithMessage("Si aplica impuesto selectivo, el porcentaje no puede exceder 100.");
             }).Otherwise(() =>
             {
                 RuleFor(x => x.ExciseTaxPercentage)
-                    .Equal(0).WithMessage("If excise tax does not apply, the percentage must be 0.");
+                    .Equal(0).WithMessage("Si no aplica impuesto selectivo, el porcentaje debe ser 0.");
             });
 
             RuleFor(x => x.IsActive)
-                .NotNull().WithMessage("Status is required.");
+                .NotNull().WithMessage("El estado es requerido.");
 
             // MEGA REGLA DE NEGOCIO (COMENTADA PA NO PERDERME)
             RuleFor(x => x)
@@ -87,7 +87,7 @@ namespace ImportCostPro.BusinessLogic.Validators.TariffCategory
 
                     return true; // Solo intentó cambiar el Nombre o el IsActive, se lo permitimos.
                 })
-                .WithMessage("Critical fiscal fields (Code, Tariff, ITBIS, Excise Tax) cannot be modified because this category is already associated with existing products. If you need a new fiscal configuration, create a new category.");
+                .WithMessage("Los campos fiscales críticos (Código, Arancel, ITBIS, Impuesto Selectivo) no pueden ser modificados porque esta categoría ya está asociada a productos existentes. Si necesita una nueva configuración fiscal, cree una nueva categoría.");
         }
     }
 }

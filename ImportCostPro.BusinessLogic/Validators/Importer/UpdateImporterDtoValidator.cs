@@ -9,25 +9,25 @@ public class UpdateImporterDtoValidator : AbstractValidator<UpdateImporterDto>
     public UpdateImporterDtoValidator(IUnitOfWork unitOfWork)
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id is required.");
+            .NotEmpty().WithMessage("El ID es requerido.");
 
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Name cannot be null or empty.")
+            .NotEmpty().WithMessage("El nombre es requerido.")
             .MustAsync(async (dto, name, ct) =>
                 !await unitOfWork.Importers.ExistsByNameAsync(name.Trim(), dto.Id))
-            .WithMessage("An importer with the same name already exists.");
+            .WithMessage("Ya existe un importador con el mismo nombre.");
 
         RuleFor(x => x.TaxId)
-            .NotEmpty().WithMessage("TaxId cannot be null or empty.")
+            .NotEmpty().WithMessage("El RNC/NIT es requerido.")
             .MustAsync(async (dto, taxId, ct) =>
                 !await unitOfWork.Importers.ExistsByTaxIdAsync(taxId.Trim(), dto.Id))
-            .WithMessage("An importer with the same TaxId already exists.");
+            .WithMessage("Ya existe un importador con el mismo RNC/NIT.");
 
         RuleFor(x => x.CountryId)
-            .NotEmpty().WithMessage("CountryId is required.");
+            .NotEmpty().WithMessage("El país es requerido.");
 
         RuleFor(x => x.Email)
             .EmailAddress().When(x => !string.IsNullOrWhiteSpace(x.Email))
-            .WithMessage("Email must be a valid email address.");
+            .WithMessage("El correo electrónico debe ser válido.");
     }
 }

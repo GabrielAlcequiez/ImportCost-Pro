@@ -10,25 +10,25 @@ namespace ImportCostPro.BusinessLogic.Validators.Product
         public UpdateProductDtoValidator(IUnitOfWork unitOfWork)
         {
             RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Product Id is required for updates.");
+                .NotEmpty().WithMessage("El ID del producto es requerido para actualizar.");
 
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("The product name is required")
-                .MaximumLength(150).WithMessage("Name cannot be greater than 150 characters");
+                .NotEmpty().WithMessage("El nombre del producto es requerido.")
+                .MaximumLength(150).WithMessage("El nombre no puede exceder 150 caracteres.");
 
             RuleFor(x => x.CodeReference)
-                .NotEmpty().WithMessage("The reference code is required")
-                .MaximumLength(50).WithMessage("Code reference cannot be greater than 50 characters")
+                .NotEmpty().WithMessage("El código de referencia es requerido.")
+                .MaximumLength(50).WithMessage("El código de referencia no puede exceder 50 caracteres.")
                 .MustAsync(async (dto, codeReference, cancellationToken) =>
                 {
                     var cleanCode = codeReference.Trim();
                     var exists = await unitOfWork.Products.ExistsByReferenceCodeAsync(cleanCode, dto.Id);
                     return !exists;
                 })
-                .WithMessage("It already exists a product with that code reference.");
+                .WithMessage("Ya existe un producto con ese código de referencia.");
 
             RuleFor(x => x.CountryId)
-                .NotEmpty().WithMessage("The country is required")
+                .NotEmpty().WithMessage("El país es requerido.")
                 .MustAsync(async (dto, countryId, cancellationToken) =>
                 {
                     var country = await unitOfWork.Countries.GetByIdAsync(countryId);
@@ -38,10 +38,10 @@ namespace ImportCostPro.BusinessLogic.Validators.Product
                     var product = await unitOfWork.Products.GetByIdAsync(dto.Id);
                     return product != null && product.CountryId == countryId;
                 })
-                .WithMessage("The country need to be already active");
+                .WithMessage("El país debe estar activo.");
 
             RuleFor(x => x.TariffCategoryId)
-                .NotEmpty().WithMessage("The tariff category is required")
+                .NotEmpty().WithMessage("La categoría arancelaria es requerida.")
                 .MustAsync(async (dto, categoryId, cancellationToken) =>
                 {
                     var category = await unitOfWork.TariffCategories.GetByIdAsync(categoryId);
@@ -51,34 +51,34 @@ namespace ImportCostPro.BusinessLogic.Validators.Product
                     var product = await unitOfWork.Products.GetByIdAsync(dto.Id);
                     return product != null && product.TariffCategoryId == categoryId;
                 })
-                .WithMessage("The selected tariff category needs to exists.");
+                .WithMessage("La categoría arancelaria seleccionada debe existir.");
 
             RuleFor(x => x.UnitWeight)
-                .NotNull().WithMessage("Unit weight is required")
-                .GreaterThan(0).WithMessage("Unit weight needs to be greater than 0.");
+                .NotNull().WithMessage("El peso unitario es requerido.")
+                .GreaterThan(0).WithMessage("El peso unitario debe ser mayor que 0.");
 
             RuleFor(x => x.UnitOfMeasure)
-                .IsInEnum().WithMessage("The Unit of Measure is not valid");
+                .IsInEnum().WithMessage("La unidad de medida no es válida.");
 
             RuleFor(x => x.Description)
-                .MaximumLength(250).WithMessage("Description cannot be greater than 250 characters");
+                .MaximumLength(250).WithMessage("La descripción no puede exceder 250 caracteres.");
 
             RuleFor(x => x.IsActive)
-                .NotNull().WithMessage("Status is required.");
+                .NotNull().WithMessage("El estado es requerido.");
 
             When(x => x.Length.HasValue || x.Width.HasValue || x.Height.HasValue, () =>
             {
                 RuleFor(x => x.Length)
-                    .NotNull().WithMessage("If length, width or height is provided, all three fields must have a value.")
-                    .GreaterThan(0).WithMessage("Length must be greater than 0.");
+                    .NotNull().WithMessage("Si se coloca largo, ancho o alto, los tres campos deben tener valor.")
+                    .GreaterThan(0).WithMessage("El largo debe ser mayor que 0.");
 
                 RuleFor(x => x.Width)
-                    .NotNull().WithMessage("If length, width or height is provided, all three fields must have a value.")
-                    .GreaterThan(0).WithMessage("Width must be greater than 0.");
+                    .NotNull().WithMessage("Si se coloca largo, ancho o alto, los tres campos deben tener valor.")
+                    .GreaterThan(0).WithMessage("El ancho debe ser mayor que 0.");
 
                 RuleFor(x => x.Height)
-                    .NotNull().WithMessage("If length, width or height is provided, all three fields must have a value.")
-                    .GreaterThan(0).WithMessage("Height must be greater than 0.");
+                    .NotNull().WithMessage("Si se coloca largo, ancho o alto, los tres campos deben tener valor.")
+                    .GreaterThan(0).WithMessage("El alto debe ser mayor que 0.");
             });
 
             RuleFor(x => x)
