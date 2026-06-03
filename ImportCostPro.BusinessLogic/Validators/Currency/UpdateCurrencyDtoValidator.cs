@@ -16,7 +16,7 @@ public class UpdateCurrencyDtoValidator : AbstractValidator<UpdateCurrencyDto>
 
         RuleFor(x => x.ISOCode)
             .NotEmpty().WithMessage("ISOCode cannot be null or empty.")
-            .Length(3).WithMessage("ISOCode must be exactly 3 characters long.")
+            .Length(2, 3).WithMessage("ISOCode must be 2 or 3 characters long.")
             .MustAsync(async (dto, isoCode, ct) =>
                 !await unitOfWork.Currencies.ExistsByISOCodeAsync(isoCode.Trim().ToUpperInvariant(), dto.Id))
             .WithMessage("A currency with the same ISO code already exists.");
