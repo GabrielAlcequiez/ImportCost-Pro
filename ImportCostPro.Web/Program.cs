@@ -9,6 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure default culture to Spanish (Dominican Republic) but with dot decimal separator
+// to avoid decimal model binding issues on Spanish locale servers.
+var defaultCulture = new System.Globalization.CultureInfo("es-DO");
+defaultCulture.NumberFormat.NumberDecimalSeparator = ".";
+defaultCulture.NumberFormat.CurrencyDecimalSeparator = ".";
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
