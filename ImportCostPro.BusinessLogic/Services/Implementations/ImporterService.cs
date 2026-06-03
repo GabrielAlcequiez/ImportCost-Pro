@@ -58,16 +58,19 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             var importer = await _unitOfWork.Importers.GetByIdAsync(id)
                  ?? throw new KeyNotFoundException("Importer not found.");
 
+            bool isSoftDelete;
             if (await _unitOfWork.Importers.HasRelatedEntitiesAsync(id))
             {
                 await _unitOfWork.Importers.SoftDeleteAsync(id);
+                isSoftDelete = true;
             }
             else
             {
                 await _unitOfWork.Importers.DeleteAsync(id);
+                isSoftDelete = false;
             }
             await _unitOfWork.CompleteAsync();
-            return true;
+            return isSoftDelete;
         }
 
         public async Task<List<ImporterDto>> GetAllImportersAsync()
