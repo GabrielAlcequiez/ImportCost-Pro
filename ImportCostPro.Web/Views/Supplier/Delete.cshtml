@@ -1,0 +1,79 @@
+@model SupplierViewModel
+@{
+    ViewData["Title"] = "Eliminar Proveedor";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-7 col-lg-5">
+            <a asp-action="Index" class="btn btn-link text-decoration-none p-0 mb-3 text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Volver al listado
+            </a>
+
+            <div class="card shadow-sm border-0 border-top border-danger border-3 mt-2">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
+                            <i class="bi bi-trash3-fill fs-3"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title fw-bold mb-0 text-dark">Eliminar Proveedor</h4>
+                            <small class="text-muted">Esta acción eliminará o desactivará el proveedor según corresponda.</small>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted mb-4" />
+
+                    <p class="text-secondary mb-1">¿Estás seguro de que deseas eliminar el siguiente proveedor?</p>
+
+                    <div class="bg-light rounded p-3 mb-4">
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <span class="text-muted small d-block">Nombre</span>
+                                <strong>@Model.Name</strong>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <span class="text-muted small d-block">País</span>
+                                <strong>@Model.CountryName</strong>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <span class="text-muted small d-block">Moneda</span>
+                                <strong>@Model.CurrencyName</strong>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.Email))
+                            {
+                                <div class="col-12 mt-2">
+                                    <span class="text-muted small d-block">Correo</span>
+                                    <strong>@Model.Email</strong>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Telephone))
+                            {
+                                <div class="col-12 mt-2">
+                                    <span class="text-muted small d-block">Teléfono</span>
+                                    <strong>@Model.Telephone</strong>
+                                </div>
+                            }
+                            <div class="col-12 mt-2">
+                                <span class="text-muted small d-block">Estado</span>
+                                <span class="badge rounded-pill @(Model.IsActive ? "bg-success-subtle text-success border border-success" : "bg-danger-subtle text-danger border border-danger")">
+                                    @(Model.IsActive ? "Activo" : "Inactivo")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-2 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-danger px-4">
+                                <i class="bi bi-trash3 me-2"></i>Confirmar Eliminación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
