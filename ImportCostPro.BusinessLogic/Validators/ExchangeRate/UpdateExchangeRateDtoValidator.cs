@@ -11,30 +11,30 @@ namespace ImportCostPro.BusinessLogic.Validators.ExchangeRate
         public UpdateExchangeRateDtoValidator(IUnitOfWork unitOfWork)
         {
             RuleFor(x=>x.Id)
-                .NotEmpty().WithMessage("Exchange rate ID is required for update.");
+                .NotEmpty().WithMessage("El ID de la tasa de cambio es requerido para actualizar.");
             RuleFor(x => x.SourceCurrencyId)
-                .NotEmpty().WithMessage("The source currency is required.")
+                .NotEmpty().WithMessage("La moneda origen es requerida.")
                 .MustAsync(async (id, ct) =>
                 {
                     var currency = await unitOfWork.Currencies.GetByIdAsync(id);
                     return currency != null && currency.IsActive;
-                }).WithMessage("The selected source currency must exist and be active");
+                }).WithMessage("La moneda origen debe existir y estar activa.");
 
             RuleFor(x => x.TargetCurrencyId)
-                .NotEmpty().WithMessage("The target currency is required.")
+                .NotEmpty().WithMessage("La moneda destino es requerida.")
                 .MustAsync(async (id, cancellationToken) =>
                 {
                     var currency = await unitOfWork.Currencies.GetByIdAsync(id);
                     return currency != null && currency.IsActive;
-                }).WithMessage("The selected target currency must exist and be active.")
-                .NotEqual(x => x.SourceCurrencyId).WithMessage("The source currency cannot be the same as the target currency.");
+                }).WithMessage("La moneda destino debe existir y estar activa.")
+                .NotEqual(x => x.SourceCurrencyId).WithMessage("La moneda origen no puede ser igual a la moneda destino.");
         
             RuleFor(x => x.RateValue)
-                .NotNull().WithMessage("The rate value is required.")
-                .GreaterThan(0).WithMessage("The rate value must be greater than 0.");
+                .NotNull().WithMessage("El valor de la tasa es requerido.")
+                .GreaterThan(0).WithMessage("El valor de la tasa debe ser mayor que 0.");
 
             RuleFor(x=>x.EffectiveDate)
-                .NotEmpty().WithMessage("The effective date is required");
+                .NotEmpty().WithMessage("La fecha de vigencia es requerida.");
 
             // validacion para evitar tasas donde moneda origen, destino y fhecha sean iguales
             RuleFor(X => X)
@@ -47,7 +47,7 @@ namespace ImportCostPro.BusinessLogic.Validators.ExchangeRate
                         dto.Id);
 
                     return !exists;
-                }).WithMessage("An active exchange rate already exists for this source currency, target currency, and effective date.")
+                }).WithMessage("Ya existe una tasa de cambio activa para esta moneda origen, moneda destino y fecha de vigencia.")
                 .WithName("UniqueRateConstraint");
         }       
     }
