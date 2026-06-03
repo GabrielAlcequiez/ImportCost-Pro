@@ -89,7 +89,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             country.Update(
                 countryUpdateDto.Name.Trim(),
                 countryUpdateDto.ISOCode.Trim().ToUpperInvariant(),
-                country.IsActive);
+                countryUpdateDto.IsActive);
             await _unitOfWork.CompleteAsync();
             // Deshabilitada porque al pasarle ocn Update, y luego hacer UpdateAsync, se hacia consulta dos veces...
             // await _unitOfWork.Countries.UpdateAsync(id, country);

@@ -1,0 +1,69 @@
+@model UpdateCountryViewModel
+@{
+    ViewData["Title"] = "Editar País";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <a asp-action="Index" class="btn btn-link text-decoration-none p-0 mb-3 text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Volver al listado
+            </a>
+
+            <div class="card shadow-sm border-0 mt-2">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded p-2 me-3">
+                            <i class="bi bi-pencil-square fs-3"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title fw-bold mb-0 text-dark">Editar País</h4>
+                            <small class="text-muted">Modifica los datos del país registrado.</small>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted mb-4" />
+
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        @if (!Model.IsActive)
+                        {
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" id="isActiveSwitch" />
+                                    <label class="form-check-label fw-semibold text-secondary" for="isActiveSwitch">Activar País</label>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="IsActive" />
+                        }
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold text-secondary">Nombre del País</label>
+                            <input asp-for="Name" class="form-control" placeholder="Ej: Estados Unidos" autocomplete="off" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ISOCode" class="form-label fw-semibold text-secondary">Código ISO (Alfa-2 o Alfa-3)</label>
+                            <input asp-for="ISOCode" class="form-control text-uppercase" placeholder="Ej: USA" maxlength="3" autocomplete="off" />
+                            <span asp-validation-for="ISOCode" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-2 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-warning px-4">
+                                <i class="bi bi-save me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

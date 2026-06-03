@@ -1,0 +1,544 @@
+@model UpdateImportOrderViewModel
+@{
+    ViewData["Title"] = "Editar Orden de Importación";
+    var isOpen = Model.Status == ImportOrderStatus.Open;
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <a asp-action="Index" class="btn btn-link text-decoration-none p-0 mb-3 text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Volver al listado
+            </a>
+
+            @if (TempData["SuccessMessage"] is string successMsg)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>@successMsg
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] is string errorMsg)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>@errorMsg
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="card shadow-sm border-0 mt-2 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded p-2 me-3">
+                            <i class="bi bi-pencil-square fs-3"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title fw-bold mb-0 text-dark">@Model.OrderNumber</h4>
+                            <small class="text-muted">
+                                @switch (Model.Status)
+                                {
+                                    case ImportOrderStatus.Open: <span class="badge bg-primary">Abierta</span> break;
+                                    case ImportOrderStatus.Calculated: <span class="badge bg-success">Calculada</span> break;
+                                    case ImportOrderStatus.Closed: <span class="badge bg-secondary">Cerrada</span> break;
+                                    case ImportOrderStatus.Cancelled: <span class="badge bg-danger">Cancelada</span> break;
+                                }
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted mb-4" />
+
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        @if (isOpen)
+                        {
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label asp-for="OrderNumber" class="form-label fw-semibold text-secondary">Número de Orden</label>
+                                    <input asp-for="OrderNumber" class="form-control" maxlength="20" />
+                                    <span asp-validation-for="OrderNumber" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="OrderDate" class="form-label fw-semibold text-secondary">Fecha de Orden</label>
+                                    <input asp-for="OrderDate" class="form-control" type="date" />
+                                    <span asp-validation-for="OrderDate" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="TransportMode" class="form-label fw-semibold text-secondary">Modo de Transporte</label>
+                                    <select asp-for="TransportMode" asp-items="Model.TransportModes" class="form-select">
+                                        <option value="">-- Selecciona un modo --</option>
+                                    </select>
+                                    <span asp-validation-for="TransportMode" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label asp-for="ImporterId" class="form-label fw-semibold text-secondary">Importador</label>
+                                    <select asp-for="ImporterId" asp-items="Model.Importers" class="form-select">
+                                        <option value="">-- Selecciona un importador --</option>
+                                    </select>
+                                    <span asp-validation-for="ImporterId" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="SupplierId" class="form-label fw-semibold text-secondary">Proveedor</label>
+                                    <select asp-for="SupplierId" asp-items="Model.Suppliers" class="form-select">
+                                        <option value="">-- Selecciona un proveedor --</option>
+                                    </select>
+                                    <span asp-validation-for="SupplierId" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label asp-for="CountryId" class="form-label fw-semibold text-secondary">País de Origen</label>
+                                    <select asp-for="CountryId" asp-items="Model.Countries" class="form-select">
+                                        <option value="">-- Selecciona un país --</option>
+                                    </select>
+                                    <span asp-validation-for="CountryId" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="CurrencyId" class="form-label fw-semibold text-secondary">Moneda</label>
+                                    <select asp-for="CurrencyId" asp-items="Model.Currencies" class="form-select">
+                                        <option value="">-- Selecciona una moneda --</option>
+                                    </select>
+                                    <span asp-validation-for="CurrencyId" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="ExchangeRateValue" class="form-label fw-semibold text-secondary">Tasa de Cambio</label>
+                                    <input asp-for="ExchangeRateValue" class="form-control" type="number" step="0.0001" lang="en" />
+                                    <span asp-validation-for="ExchangeRateValue" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold text-secondary">Número de Orden</label>
+                                    <input class="form-control" value="@Model.OrderNumber" disabled />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold text-secondary">Fecha de Orden</label>
+                                    <input class="form-control" value="@Model.OrderDate.ToString("dd/MM/yyyy")" disabled />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold text-secondary">Modo de Transporte</label>
+                                    <input class="form-control" value="@Model.TransportMode.ToDisplayName()" disabled />
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">Importador</label>
+                                    <input class="form-control" value="@Model.ImporterName" disabled />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">Proveedor</label>
+                                    <input class="form-control" value="@Model.SupplierName" disabled />
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold text-secondary">País de Origen</label>
+                                    <input class="form-control" value="@Model.CountryName" disabled />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold text-secondary">Moneda</label>
+                                    <input class="form-control" value="@Model.CurrencyCode" disabled />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold text-secondary">Tasa de Cambio</label>
+                                    <input class="form-control" value="@Model.ExchangeRateValue.ToString("N4")" disabled />
+                                </div>
+                            </div>
+                        }
+
+                        @if (isOpen)
+                        {
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-2 border-top mb-4">
+                                <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                                <button type="submit" class="btn btn-warning px-4">
+                                    <i class="bi bi-save me-2"></i>Guardar Cambios
+                                </button>
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+
+            @* Detalles de Productos *@
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-box me-2"></i>Productos</h5>
+                        @if (isOpen)
+                        {
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                                <i class="bi bi-plus-circle me-1"></i>Agregar Producto
+                            </button>
+                        }
+                    </div>
+
+                    @if (!Model.Details.Any())
+                    {
+                        <p class="text-muted small mb-0">No hay productos agregados a esta orden.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Costo FOB</th>
+                                        <th>Peso</th>
+                                        <th>Arancel%</th>
+                                        <th>Margen%</th>
+                                        <th>Total FOB</th>
+                                        @if (isOpen)
+                                        {
+                                            <th class="text-end">Acción</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var detail in Model.Details)
+                                    {
+                                        <tr>
+                                            <td><small>@detail.ProductCodeReference - @detail.ProductName</small></td>
+                                            <td>@detail.Quantity.ToString("N4")</td>
+                                            <td>@detail.UnitCostFob.ToString("N4")</td>
+                                            <td>@detail.UnitWeight.ToString("N4")</td>
+                                            <td>@detail.CustomDutyPercentage.ToString("N2")%</td>
+                                            <td>@detail.DesiredProfitMargin.ToString("N2")%</td>
+                                            <td><strong>@detail.TotalCostFob.ToString("N2")</strong></td>
+                                            @if (isOpen)
+                                            {
+                                                <td class="text-end">
+                                                    <form asp-action="RemoveDetail" method="post" class="d-inline"
+                                                          onsubmit="return confirm('¿Eliminar este producto de la orden?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="detailId" value="@detail.Id" />
+                                                        <input type="hidden" name="orderId" value="@Model.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* Gastos *@
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-cash me-2"></i>Gastos</h5>
+                        @if (isOpen)
+                        {
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                <i class="bi bi-plus-circle me-1"></i>Agregar Gasto
+                            </button>
+                        }
+                    </div>
+
+                    @if (!Model.Expenses.Any())
+                    {
+                        <p class="text-muted small mb-0">No hay gastos registrados en esta orden.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Monto</th>
+                                        <th>Moneda</th>
+                                        <th>Tasa</th>
+                                        <th>Monto Local</th>
+                                        <th>Prorrateo</th>
+                                        <th>Fecha</th>
+                                        @if (isOpen)
+                                        {
+                                            <th class="text-end">Acción</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var expense in Model.Expenses)
+                                    {
+                                        <tr>
+                                            <td><small>@expense.ExpenseType.ToDisplayName()</small></td>
+                                            <td>@expense.Amount.ToString("N2")</td>
+                                            <td>@expense.CurrencyCode</td>
+                                            <td>@expense.ExchangeRateValue.ToString("N4")</td>
+                                            <td><strong>@expense.AmountInLocalCurrency.ToString("N2")</strong></td>
+                                            <td><small>@expense.ApportionmentMethod.ToDisplayName()</small></td>
+                                            <td>@expense.ExpenseDate.ToString("dd/MM/yyyy")</td>
+                                            @if (isOpen)
+                                            {
+                                                <td class="text-end">
+                                                    <form asp-action="RemoveExpense" method="post" class="d-inline"
+                                                          onsubmit="return confirm('¿Eliminar este gasto de la orden?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="expenseId" value="@expense.Id" />
+                                                        <input type="hidden" name="orderId" value="@Model.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (!isOpen)
+            {
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@* Modal Agregar Producto *@
+@if (isOpen)
+{
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-action="AddDetail" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar Producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Producto</label>
+                            <select name="productId" class="form-select" required>
+                                <option value="">-- Selecciona un producto --</option>
+                                @foreach (var p in Model.AvailableProducts)
+                                {
+                                    <option value="@p.Value">@p.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Cantidad</label>
+                                <input name="quantity" class="form-control" type="number" step="0.0001" min="0.0001" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Costo FOB</label>
+                                <input name="unitCostFob" class="form-control" type="number" step="0.0001" min="0.0001" required />
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-secondary">Peso</label>
+                                <input name="unitWeight" class="form-control" type="number" step="0.0001" min="0.0001" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-secondary">Arancel%</label>
+                                <input name="customDutyPercentage" class="form-control" type="number" step="0.01" min="0" max="100" value="0" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-secondary">Margen%</label>
+                                <input name="desiredProfitMargin" class="form-control" type="number" step="0.01" min="0" value="0" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @* Modal Agregar Gasto *@
+    <div class="modal fade" id="addExpenseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-action="AddExpense" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar Gasto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Tipo de Gasto</label>
+                            <select name="expenseType" class="form-select" required>
+                                <option value="">-- Selecciona un tipo --</option>
+                                @foreach (var et in Model.ExpenseTypesList)
+                                {
+                                    <option value="@et.Value">@et.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Monto</label>
+                                <input name="amount" class="form-control" type="number" step="0.01" min="0.01" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Moneda</label>
+                                <select name="currencyId" class="form-select" required>
+                                    <option value="">-- Selecciona moneda --</option>
+                                    @foreach (var c in Model.ExpenseCurrencies)
+                                    {
+                                        <option value="@c.Value">@c.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Tasa de Cambio</label>
+                                <input name="exchangeRateValue" class="form-control" type="number" step="0.0001" min="0.0001" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-secondary">Método de Prorrateo</label>
+                                <select name="apportionmentMethod" class="form-select" required>
+                                    <option value="">-- Selecciona método --</option>
+                                    @foreach (var am in Model.ApportionmentMethodsList)
+                                    {
+                                        <option value="@am.Value">@am.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 mt-1">
+                            <label class="form-label fw-semibold text-secondary">Fecha del Gasto</label>
+                            <input name="expenseDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Exchange Rate Autocomplete for Order Header
+            const currencySelect = document.getElementById("CurrencyId");
+            const dateInput = document.getElementById("OrderDate");
+            const rateInput = document.getElementById("ExchangeRateValue");
+
+            async function fetchExchangeRate() {
+                if (!currencySelect || !dateInput || !rateInput) return;
+                const currencyId = currencySelect.value;
+                const date = dateInput.value;
+
+                if (!currencyId || !date) return;
+
+                try {
+                    const response = await fetch(`/ImportOrder/GetLatestExchangeRate?currencyId=${currencyId}&orderDate=${date}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        rateInput.value = data.rate.toFixed(4);
+                    } else {
+                        rateInput.value = "0.0000";
+                        console.warn(data.message || "No se pudo obtener la tasa de cambio para la fecha indicada.");
+                    }
+                } catch (error) {
+                    console.error("Error al obtener la tasa de cambio:", error);
+                }
+            }
+
+            if (currencySelect) currencySelect.addEventListener("change", fetchExchangeRate);
+            if (dateInput) dateInput.addEventListener("change", fetchExchangeRate);
+
+            // 2. Product Details Autocomplete (Weight & Tariff)
+            const productSelect = document.querySelector('#addProductModal select[name="productId"]');
+            const weightInput = document.querySelector('#addProductModal input[name="unitWeight"]');
+            const tariffInput = document.querySelector('#addProductModal input[name="customDutyPercentage"]');
+
+            async function fetchProductDetails() {
+                if (!productSelect || !weightInput || !tariffInput) return;
+                const productId = productSelect.value;
+
+                if (!productId) {
+                    weightInput.value = "";
+                    tariffInput.value = "0.00";
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/ImportOrder/GetProductDetails?productId=${productId}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        weightInput.value = data.unitWeight.toFixed(4);
+                        tariffInput.value = data.customDutyPercentage.toFixed(2);
+                    } else {
+                        console.warn(data.message || "No se pudieron obtener los detalles del producto.");
+                    }
+                } catch (error) {
+                    console.error("Error al obtener detalles del producto:", error);
+                }
+            }
+
+            if (productSelect) productSelect.addEventListener("change", fetchProductDetails);
+
+            // 3. Exchange Rate Autocomplete for Expenses Modal
+            const expCurrencySelect = document.querySelector('#addExpenseModal select[name="currencyId"]');
+            const expDateInput = document.querySelector('#addExpenseModal input[name="expenseDate"]');
+            const expRateInput = document.querySelector('#addExpenseModal input[name="exchangeRateValue"]');
+
+            async function fetchExpenseExchangeRate() {
+                if (!expCurrencySelect || !expDateInput || !expRateInput) return;
+                const currencyId = expCurrencySelect.value;
+                const date = expDateInput.value;
+
+                if (!currencyId || !date) return;
+
+                try {
+                    const response = await fetch(`/ImportOrder/GetLatestExchangeRate?currencyId=${currencyId}&orderDate=${date}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        expRateInput.value = data.rate.toFixed(4);
+                    } else {
+                        expRateInput.value = "0.0000";
+                        console.warn(data.message || "No se pudo obtener la tasa de cambio para la fecha indicada.");
+                    }
+                } catch (error) {
+                    console.error("Error al obtener la tasa de cambio del gasto:", error);
+                }
+            }
+
+            if (expCurrencySelect) expCurrencySelect.addEventListener("change", fetchExpenseExchangeRate);
+            if (expDateInput) expDateInput.addEventListener("change", fetchExpenseExchangeRate);
+        });
+    </script>
+}

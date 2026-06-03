@@ -18,7 +18,7 @@ public class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
         builder.Property(c => c.Symbol)
             .IsRequired();
 
-        builder.HasExactIsoCodeRule(nameof(Currency.ISOCode), 3);
+        builder.HasStringLengthRule(nameof(Currency.ISOCode), 2, 3);
 
         builder.HasIndex(c => c.ISOCode)
             .IsUnique();

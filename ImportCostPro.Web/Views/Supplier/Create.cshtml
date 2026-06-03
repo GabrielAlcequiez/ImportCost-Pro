@@ -1,0 +1,76 @@
+@model CreateSupplierViewModel
+@{
+    ViewData["Title"] = "Registrar Proveedor";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-9 col-lg-7">
+            <a asp-action="Index" class="btn btn-link text-decoration-none p-0 mb-3 text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Volver al listado
+            </a>
+
+            <div class="card shadow-sm border-0 mt-2">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded p-2 me-3">
+                            <i class="bi bi-truck fs-3"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title fw-bold mb-0 text-dark">Registrar Nuevo Proveedor</h4>
+                            <small class="text-muted">Agrega un proveedor al sistema.</small>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted mb-4" />
+
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold text-secondary">Nombre / Razón Social</label>
+                            <input asp-for="Name" class="form-control" placeholder="Ej: Suministros Globales S.A." autocomplete="off" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="CountryId" class="form-label fw-semibold text-secondary">País</label>
+                                <select asp-for="CountryId" asp-items="Model.Countries" class="form-select">
+                                    <option value="">-- Selecciona un país --</option>
+                                </select>
+                                <span asp-validation-for="CountryId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="CurrencyId" class="form-label fw-semibold text-secondary">Moneda</label>
+                                <select asp-for="CurrencyId" asp-items="Model.Currencies" class="form-select">
+                                    <option value="">-- Selecciona una moneda --</option>
+                                </select>
+                                <span asp-validation-for="CurrencyId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Telephone" class="form-label fw-semibold text-secondary">Teléfono <span class="text-muted small">(opcional)</span></label>
+                                <input asp-for="Telephone" class="form-control" placeholder="Ej: 809-555-1234" maxlength="20" autocomplete="off" />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-semibold text-secondary">Correo <span class="text-muted small">(opcional)</span></label>
+                                <input asp-for="Email" class="form-control" type="email" placeholder="Ej: contacto@proveedor.com" autocomplete="off" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-2 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save me-2"></i>Guardar Proveedor
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

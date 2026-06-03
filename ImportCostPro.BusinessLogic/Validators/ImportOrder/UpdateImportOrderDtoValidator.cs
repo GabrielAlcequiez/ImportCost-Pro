@@ -9,53 +9,53 @@ namespace ImportCostPro.BusinessLogic.Validators.ImportOrder
         public UpdateImportOrderDtoValidator(IUnitOfWork unitOfWork)
         {
             RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Id is required.");
+                .NotEmpty().WithMessage("El ID es requerido.");
 
             RuleFor(x => x.OrderNumber)
-                .NotEmpty().WithMessage("Order number is required.")
-                .MaximumLength(20).WithMessage("Order number cannot exceed 20 characters.")
+                .NotEmpty().WithMessage("El número de orden es requerido.")
+                .MaximumLength(20).WithMessage("El número de orden no puede exceder 20 caracteres.")
                 .MustAsync(async (dto, num, ct) =>
                     !await unitOfWork.ImportOrders.ExistsByOrderNumberAsync(num, dto.Id))
-                .WithMessage("An import order with this number already exists.");
+                .WithMessage("Ya existe una orden de importación con este número.");
 
             RuleFor(x => x.OrderDate)
-                .NotEmpty().WithMessage("Order date is required.")
-                .LessThanOrEqualTo(DateTime.Today).WithMessage("Order date cannot be in the future.");
+                .NotEmpty().WithMessage("La fecha de orden es requerida.")
+                .LessThanOrEqualTo(DateTime.Today).WithMessage("La fecha de orden no puede ser en el futuro.");
 
             RuleFor(x => x.ImporterId)
-                .NotEmpty().WithMessage("Importer is required.")
+                .NotEmpty().WithMessage("El importador es requerido.")
                 .MustAsync(async (id, ct) =>
                 {
                     var entity = await unitOfWork.Importers.GetByIdAsync(id);
                     return entity != null && entity.IsActive;
-                }).WithMessage("The selected importer does not exist or is inactive.");
+                }).WithMessage("El importador seleccionado no existe o está inactivo.");
 
             RuleFor(x => x.SupplierId)
-                .NotEmpty().WithMessage("Supplier is required.")
+                .NotEmpty().WithMessage("El proveedor es requerido.")
                 .MustAsync(async (id, ct) =>
                 {
                     var entity = await unitOfWork.Suppliers.GetByIdAsync(id);
                     return entity != null && entity.IsActive;
-                }).WithMessage("The selected supplier does not exist or is inactive.");
+                }).WithMessage("El proveedor seleccionado no existe o está inactivo.");
 
             RuleFor(x => x.CountryId)
-                .NotEmpty().WithMessage("Country of origin is required.")
+                .NotEmpty().WithMessage("El país de origen es requerido.")
                 .MustAsync(async (id, ct) =>
                 {
                     var entity = await unitOfWork.Countries.GetByIdAsync(id);
                     return entity != null && entity.IsActive;
-                }).WithMessage("The selected country does not exist or is inactive.");
+                }).WithMessage("El país seleccionado no existe o está inactivo.");
 
             RuleFor(x => x.CurrencyId)
-                .NotEmpty().WithMessage("Currency is required.")
+                .NotEmpty().WithMessage("La moneda es requerida.")
                 .MustAsync(async (id, ct) =>
                 {
                     var entity = await unitOfWork.Currencies.GetByIdAsync(id);
                     return entity != null && entity.IsActive;
-                }).WithMessage("The selected currency does not exist or is inactive.");
+                }).WithMessage("La moneda seleccionada no existe o está inactiva.");
 
             RuleFor(x => x.ExchangeRateValue)
-                .GreaterThan(0).WithMessage("Exchange rate must be greater than 0.");
+                .GreaterThan(0).WithMessage("La tasa de cambio debe ser mayor que 0.");
         }
     }
 }

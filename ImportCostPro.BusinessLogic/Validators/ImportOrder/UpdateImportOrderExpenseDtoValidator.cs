@@ -9,25 +9,25 @@ namespace ImportCostPro.BusinessLogic.Validators.ImportOrder
         public UpdateImportOrderExpenseDtoValidator(IUnitOfWork unitOfWork)
         {
             RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Expense Id is required.");
+                .NotEmpty().WithMessage("El ID del gasto es requerido.");
 
             RuleFor(x => x.CurrencyId)
-                .NotEmpty().WithMessage("Currency is required.")
+                .NotEmpty().WithMessage("La moneda es requerida.")
                 .MustAsync(async (id, ct) =>
                 {
                     var currency = await unitOfWork.Currencies.GetByIdAsync(id);
                     return currency != null && currency.IsActive;
-                }).WithMessage("The selected currency does not exist or is inactive.");
+                }).WithMessage("La moneda seleccionada no existe o está inactiva.");
 
             RuleFor(x => x.Amount)
-                .GreaterThan(0).WithMessage("Amount must be greater than 0.");
+                .GreaterThan(0).WithMessage("El monto debe ser mayor que 0.");
 
             RuleFor(x => x.ExchangeRateValue)
-                .GreaterThan(0).WithMessage("Exchange rate must be greater than 0.");
+                .GreaterThan(0).WithMessage("La tasa de cambio debe ser mayor que 0.");
 
             RuleFor(x => x.ExpenseDate)
-                .NotEmpty().WithMessage("Expense date is required.")
-                .LessThanOrEqualTo(DateTime.Today).WithMessage("Expense date cannot be in the future.");
+                .NotEmpty().WithMessage("La fecha del gasto es requerida.")
+                .LessThanOrEqualTo(DateTime.Today).WithMessage("La fecha del gasto no puede ser en el futuro.");
         }
     }
 }

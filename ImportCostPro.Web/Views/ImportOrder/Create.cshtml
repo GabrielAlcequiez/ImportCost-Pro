@@ -1,0 +1,134 @@
+@model CreateImportOrderViewModel
+@{
+    ViewData["Title"] = "Nueva Orden de Importación";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <a asp-action="Index" class="btn btn-link text-decoration-none p-0 mb-3 text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Volver al listado
+            </a>
+
+            <div class="card shadow-sm border-0 mt-2">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded p-2 me-3">
+                            <i class="bi bi-clipboard-data fs-3"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title fw-bold mb-0 text-dark">Nueva Orden de Importación</h4>
+                            <small class="text-muted">Registra una nueva orden de importación.</small>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted mb-4" />
+
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="OrderNumber" class="form-label fw-semibold text-secondary">Número de Orden</label>
+                                <input asp-for="OrderNumber" class="form-control" placeholder="Ej: IMP-001" autocomplete="off" maxlength="20" />
+                                <span asp-validation-for="OrderNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="OrderDate" class="form-label fw-semibold text-secondary">Fecha de Orden</label>
+                                <input asp-for="OrderDate" class="form-control" type="date" />
+                                <span asp-validation-for="OrderDate" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="TransportMode" class="form-label fw-semibold text-secondary">Modo de Transporte</label>
+                                <select asp-for="TransportMode" asp-items="Model.TransportModes" class="form-select">
+                                    <option value="">-- Selecciona un modo --</option>
+                                </select>
+                                <span asp-validation-for="TransportMode" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="ImporterId" class="form-label fw-semibold text-secondary">Importador</label>
+                                <select asp-for="ImporterId" asp-items="Model.Importers" class="form-select">
+                                    <option value="">-- Selecciona un importador --</option>
+                                </select>
+                                <span asp-validation-for="ImporterId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="SupplierId" class="form-label fw-semibold text-secondary">Proveedor</label>
+                                <select asp-for="SupplierId" asp-items="Model.Suppliers" class="form-select">
+                                    <option value="">-- Selecciona un proveedor --</option>
+                                </select>
+                                <span asp-validation-for="SupplierId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="CountryId" class="form-label fw-semibold text-secondary">País de Origen</label>
+                                <select asp-for="CountryId" asp-items="Model.Countries" class="form-select">
+                                    <option value="">-- Selecciona un país --</option>
+                                </select>
+                                <span asp-validation-for="CountryId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="CurrencyId" class="form-label fw-semibold text-secondary">Moneda</label>
+                                <select asp-for="CurrencyId" asp-items="Model.Currencies" class="form-select">
+                                    <option value="">-- Selecciona una moneda --</option>
+                                </select>
+                                <span asp-validation-for="CurrencyId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ExchangeRateValue" class="form-label fw-semibold text-secondary">Tasa de Cambio</label>
+                                <input asp-for="ExchangeRateValue" class="form-control" type="number" step="0.0001" lang="en" placeholder="Ej: 58.2500" autocomplete="off" />
+                                <span asp-validation-for="ExchangeRateValue" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-2 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save me-2"></i>Crear Orden
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currencySelect = document.getElementById("CurrencyId");
+            const dateInput = document.getElementById("OrderDate");
+            const rateInput = document.getElementById("ExchangeRateValue");
+
+            async function fetchExchangeRate() {
+                const currencyId = currencySelect.value;
+                const date = dateInput.value;
+
+                if (!currencyId || !date) return;
+
+                try {
+                    const response = await fetch(`/ImportOrder/GetLatestExchangeRate?currencyId=${currencyId}&orderDate=${date}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        rateInput.value = data.rate.toFixed(4);
+                    } else {
+                        rateInput.value = "0.0000";
+                        console.warn(data.message || "No se pudo obtener la tasa de cambio para la fecha indicada.");
+                    }
+                } catch (error) {
+                    console.error("Error al obtener la tasa de cambio:", error);
+                }
+            }
+
+            currencySelect.addEventListener("change", fetchExchangeRate);
+            dateInput.addEventListener("change", fetchExchangeRate);
+        });
+    </script>
+}

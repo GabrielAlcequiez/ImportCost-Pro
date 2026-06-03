@@ -9,11 +9,11 @@ namespace ImportCostPro.BusinessLogic.Validators.TaxConfiguration
         {
             RuleFor(x => x.GeneralItbisPercentage)
                 .InclusiveBetween(0, 100)
-                .WithMessage("ITBIS percentage must be between 0 and 100.");
+                .WithMessage("El porcentaje de ITBIS debe estar entre 0 y 100.");
 
             RuleFor(x => x.CustomsServiceFeePercentage)
                 .InclusiveBetween(0, 100)
-                .WithMessage("Customs service fee percentage must be between 0 and 100.");
+                .WithMessage("El porcentaje de tasa de servicio aduanero debe estar entre 0 y 100.");
         }
     }
 }

@@ -10,43 +10,43 @@ namespace ImportCostPro.BusinessLogic.Validators.Supplier
         public UpdateSupplierDtoValidator(IUnitOfWork unitOfWork)
         {
             RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Supplier Id is required for updates.");
+                .NotEmpty().WithMessage("El ID del proveedor es requerido para actualizar.");
 
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name cannot be null or empty")
-                .MaximumLength(150).WithMessage("Name cannot exceed 150 characters")
+                .NotEmpty().WithMessage("El nombre es requerido.")
+                .MaximumLength(150).WithMessage("El nombre no puede exceder 150 caracteres.")
                 .MustAsync(async(dto, name, ct ) =>
                 {
                     bool exists = await unitOfWork.Suppliers.ExistsByNameAsync(name, dto.Id);
                     return !exists;
-                }).WithMessage("This supplier name already exists.");
+                }).WithMessage("Ya existe un proveedor con este nombre.");
 
             RuleFor(x => x.CountryId)
-                .NotEmpty().WithMessage("Country cannot be null or empty, is required.")
+                .NotEmpty().WithMessage("El país es requerido.")
                 .MustAsync(async (id, ct) =>
                 {
                     var country = await unitOfWork.Countries.GetByIdAsync(id);
                     if (country == null) return false;
                     return true;
-                }).WithMessage("The selected country does not exist.");
+                }).WithMessage("El país seleccionado no existe.");
 
             // Lo correcto es que no aparezca, pero por si acaso..
             RuleFor(x => x.CurrencyId)
-                .NotEmpty().WithMessage("Currency cannot be null or empty, is required.")
+                .NotEmpty().WithMessage("La moneda es requerida.")
                 .MustAsync(async (id, ct) =>
                 {
                     var currency = await unitOfWork.Currencies.GetByIdAsync(id);
                     if (currency == null) return false;
                     return true;
                 })
-                .WithMessage("The selected currency does not exist.");
+                .WithMessage("La moneda seleccionada no existe.");
 
             RuleFor(x => x.Email)
-                .MaximumLength(100).WithMessage("The email is too large or invalid")
-                .EmailAddress().WithMessage("The email has an invalid format, please enter correctly");
+                .MaximumLength(100).WithMessage("El correo electrónico es demasiado largo o inválido.")
+                .EmailAddress().WithMessage("El correo electrónico tiene un formato inválido, ingréselo correctamente.");
 
             RuleFor(x => x.Telephone)
-                .MaximumLength(20).WithMessage("The telephone is too large.");
+                .MaximumLength(20).WithMessage("El teléfono es demasiado largo.");
 
             RuleFor(x => x)
                 .MustAsync(async (dto, ct) =>
@@ -65,7 +65,7 @@ namespace ImportCostPro.BusinessLogic.Validators.Supplier
 
                     return true;
                 })
-                .WithMessage("The country and main currency cannot be changed because it already has registered import orders.");
+                .WithMessage("El país y la moneda principal no pueden ser modificados porque ya tiene órdenes de importación registradas.");
                 
         }
     }

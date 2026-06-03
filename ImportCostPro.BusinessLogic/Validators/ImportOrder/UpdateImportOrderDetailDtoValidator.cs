@@ -10,24 +10,24 @@ namespace ImportCostPro.BusinessLogic.Validators.ImportOrder
         public UpdateImportOrderDetailDtoValidator()
         {
             RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Detail Id is required.");
+                .NotEmpty().WithMessage("El ID del detalle es requerido.");
 
             RuleFor(x => x.Quantity)
-                .GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+                .GreaterThan(0).WithMessage("La cantidad debe ser mayor que 0.");
 
             RuleFor(x => x.UnitCostFob)
-                .GreaterThan(0).WithMessage("Unit FOB cost must be greater than 0.");
+                .GreaterThan(0).WithMessage("El costo unitario FOB debe ser mayor que 0.");
 
             RuleFor(x => x.UnitWeight)
-                .GreaterThan(0).WithMessage("Unit weight must be greater than 0.");
+                .GreaterThan(0).WithMessage("El peso unitario debe ser mayor que 0.");
 
             RuleFor(x => x.CustomDutyPercentage)
                 .InclusiveBetween(0, 100)
-                .WithMessage("Custom duty percentage must be between 0 and 100.");
+                .WithMessage("El porcentaje de arancel debe estar entre 0 y 100.");
 
             RuleFor(x => x.DesiredProfitMargin)
                 .InclusiveBetween(0, 99.99m)
-                .WithMessage("Desired profit margin must be between 0 and 99.99%.");
+                .WithMessage("El margen de ganancia deseado debe estar entre 0 y 99.99%.");
         }
     }
 }

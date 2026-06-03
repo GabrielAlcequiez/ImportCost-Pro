@@ -1,0 +1,122 @@
+@model List<ImportOrderIndexViewModel>
+@{
+    ViewData["Title"] = "Órdenes de Importación";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h2 class="text-secondary fw-bold">Órdenes de Importación</h2>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-circle me-2"></i>Nueva Orden
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMsg)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@successMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] is string errorMsg)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>@errorMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-clipboard-data fs-1 d-block mb-3"></i>
+            <p class="fs-5">No hay órdenes de importación registradas.</p>
+            <a asp-action="Create" class="btn btn-primary">Crear Primera Orden</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Orden</th>
+                        <th>Fecha</th>
+                        <th>Importador</th>
+                        <th>Proveedor</th>
+                        <th>País</th>
+                        <th>Moneda</th>
+                        <th>Productos</th>
+                        <th>Estado</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>@item.OrderNumber</strong></td>
+                            <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                            <td>@item.ImporterName</td>
+                            <td>@item.SupplierName</td>
+                            <td>@item.CountryName</td>
+                            <td>@item.CurrencyCode</td>
+                            <td>@item.DetailCount</td>
+                            <td>
+                                @switch (item.Status)
+                                {
+                                    case ImportOrderStatus.Open:
+                                        <span class="badge bg-primary">Abierta</span>
+                                        break;
+                                    case ImportOrderStatus.Calculated:
+                                        <span class="badge bg-success">Calculada</span>
+                                        break;
+                                    case ImportOrderStatus.Closed:
+                                        <span class="badge bg-secondary">Cerrada</span>
+                                        break;
+                                    case ImportOrderStatus.Cancelled:
+                                        <span class="badge bg-danger">Cancelada</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info me-1" title="Detalles">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                @if (item.Status == ImportOrderStatus.Calculated || item.Status == ImportOrderStatus.Closed)
+                                {
+                                    <a href="@Url.Action("DetailsByOrder", "LandedCostCalculation", new { orderId = item.Id })" class="btn btn-sm btn-outline-success me-1" title="Ver Cálculo">
+                                        <i class="bi bi-calculator"></i>
+                                    </a>
+                                }
+                                @if (item.Status == ImportOrderStatus.Open)
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning me-1" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form asp-action="CancelOrder" asp-route-id="@item.Id" method="post" class="d-inline"
+                                          onsubmit="return confirm('¿Estás seguro de cancelar esta orden?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger me-1" title="Cancelar">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </form>
+                                }
+                                @if (item.Status == ImportOrderStatus.Cancelled || item.Status == ImportOrderStatus.Open)
+                                {
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline"
+                                          onsubmit="return confirm('¿Estás seguro de eliminar esta orden? Esta acción no se puede deshacer.');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

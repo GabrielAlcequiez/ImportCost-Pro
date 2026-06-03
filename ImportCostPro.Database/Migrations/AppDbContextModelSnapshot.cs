@@ -91,7 +91,7 @@ namespace ImportCostPro.Database.Migrations
 
                     b.ToTable("Currencies", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Currencies_ISOCode_Length", "LEN([ISOCode]) >= 3 AND LEN([ISOCode]) <= 3");
+                            t.HasCheckConstraint("CK_Currencies_ISOCode_Length", "LEN([ISOCode]) >= 2 AND LEN([ISOCode]) <= 3");
                         });
                 });
 

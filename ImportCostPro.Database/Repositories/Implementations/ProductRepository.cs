@@ -38,11 +38,11 @@ namespace ImportCostPro.Database.Repositories.Implementations
                     entity.CountryId,
                     entity.TariffCategoryId,
                     entity.UnitWeight,
-                    entity?.Length,
-                    entity?.Width,
-                    entity?.Height,
+                    entity.Length,
+                    entity.Width,
+                    entity.Height,
                     entity.UnitOfMeasure,
-                    entity?.Description,
+                    entity.Description,
                     false);
 
                 await _context.SaveChangesAsync();

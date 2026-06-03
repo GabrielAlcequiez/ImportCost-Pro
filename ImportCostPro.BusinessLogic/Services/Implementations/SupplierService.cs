@@ -53,11 +53,11 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 Id = supplierSaved.Id,
                 Name = supplierSaved.Name,
                 CountryId = supplierSaved.CountryId,
-                CountryName = supplierSaved.Country.Name,
+                CountryName = supplierSaved.Country?.Name ?? string.Empty,
                 Email = supplierSaved.Email,
                 Telephone = supplierSaved.Telephone,
                 CurrencyId = supplierSaved.CurrencyId,
-                CurrencyName = supplierSaved.Currency.Name,
+                CurrencyName = supplierSaved.Currency?.Name ?? string.Empty,
                 IsActive = supplierSaved.IsActive
 
             };
@@ -96,11 +96,11 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                     Id = s.Id,
                     Name = s.Name,
                     CountryId = s.CountryId,
-                    CountryName = s.Country.Name,
+                    CountryName = s.Country?.Name ?? string.Empty,
                     Email = s.Email,
                     Telephone = s.Telephone,
                     CurrencyId = s.CurrencyId,
-                    CurrencyName = s.Currency.Name,
+                    CurrencyName = s.Currency?.Name ?? string.Empty,
                     IsActive = s.IsActive
                 }).ToList();
             return supplierDtos;
@@ -121,11 +121,11 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 Id = supplier.Id,
                 Name = supplier.Name,
                 CountryId = supplier.CountryId,
-                CountryName = supplier.Country.Name,
+                CountryName = supplier.Country?.Name ?? string.Empty,
                 Email = supplier.Email,
                 Telephone = supplier.Telephone,
                 CurrencyId = supplier.CurrencyId,
-                CurrencyName = supplier.Currency.Name,
+                CurrencyName = supplier.Currency?.Name ?? string.Empty,
                 IsActive = supplier.IsActive
             };
         }
@@ -137,6 +137,12 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
             var supplier = await _unitOfWork.Suppliers.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Supplier not found.");
+
+            if ((supplier.CountryId != supplierUpdateDto.CountryId || supplier.CurrencyId != supplierUpdateDto.CurrencyId) &&
+                await _unitOfWork.Suppliers.HasRelatedEntitiesAsync(id))
+            {
+                throw new InvalidOperationException("No se puede modificar el país de origen ni la moneda principal de este proveedor porque ya tiene órdenes de importación registradas.");
+            }
 
             supplier.Update(
                 supplierUpdateDto.Name.Trim(),
@@ -163,11 +169,11 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 Id = supplierSaved.Id,
                 Name = supplierSaved.Name,
                 CountryId = supplierSaved.CountryId,
-                CountryName = supplierSaved.Country.Name,
+                CountryName = supplierSaved.Country?.Name ?? string.Empty,
                 Email = supplierSaved.Email,
                 Telephone = supplierSaved.Telephone,
                 CurrencyId = supplierSaved.CurrencyId,
-                CurrencyName = supplierSaved.Currency.Name, 
+                CurrencyName = supplierSaved.Currency?.Name ?? string.Empty, 
                 IsActive = supplierSaved.IsActive
 
             };
