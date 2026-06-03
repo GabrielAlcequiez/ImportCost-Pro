@@ -204,7 +204,7 @@ namespace ImportCostPro.Web.Controllers
             var countries = await _countryService.GetAllCountriesAsync();
 
             return countries
-                .Where(c => c.IsActive)
+                .Where(c => c.IsActive || (selectedId.HasValue && c.Id == selectedId.Value))
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),

@@ -100,7 +100,7 @@ namespace ImportCostPro.Web.Controllers
                 RateValue = dto.RateValue,
                 EffectiveDate = dto.EffectiveDate,
                 IsActive = dto.IsActive,
-                Currencies = await GetCurrencySelectListAsync()
+                Currencies = await GetCurrencySelectListAsync(dto.SourceCurrencyId, dto.TargetCurrencyId)
             };
 
             return View(viewModel);
@@ -113,7 +113,7 @@ namespace ImportCostPro.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                viewModel.Currencies = await GetCurrencySelectListAsync();
+                viewModel.Currencies = await GetCurrencySelectListAsync(viewModel.SourceCurrencyId, viewModel.TargetCurrencyId);
                 return View(viewModel);
             }
 
@@ -137,7 +137,7 @@ namespace ImportCostPro.Web.Controllers
                 foreach (var error in ex.Errors)
                     ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
 
-                viewModel.Currencies = await GetCurrencySelectListAsync();
+                viewModel.Currencies = await GetCurrencySelectListAsync(viewModel.SourceCurrencyId, viewModel.TargetCurrencyId);
                 return View(viewModel);
             }
         }
@@ -193,12 +193,12 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        private async Task<List<SelectListItem>> GetCurrencySelectListAsync()
+        private async Task<List<SelectListItem>> GetCurrencySelectListAsync(Guid? sourceId = null, Guid? targetId = null)
         {
             var currencies = await _currencyService.GetAllCurrenciesAsync();
 
             return currencies
-                .Where(c => c.IsActive)
+                .Where(c => c.IsActive || (sourceId.HasValue && c.Id == sourceId.Value) || (targetId.HasValue && c.Id == targetId.Value))
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
