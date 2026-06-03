@@ -13,6 +13,9 @@ public class Currency
 
     public Currency(string name, string isoCode, string symbol, bool isLocalCurrency)
     {
+        if (isoCode.Trim().Length != 3)
+            throw new ArgumentException("ISO code must be exactly 3 characters.", nameof(isoCode));
+
         Id = Guid.NewGuid();
         Name = name.Trim();
         ISOCode = isoCode.Trim().ToUpperInvariant();
@@ -23,6 +26,9 @@ public class Currency
 
     public void Update(string name, string isoCode, string symbol, bool isLocalCurrency, bool isActive)
     {
+        if (isoCode.Trim().Length != 3)
+            throw new ArgumentException("ISO code must be exactly 3 characters.", nameof(isoCode));
+
         Name = name.Trim();
         ISOCode = isoCode.Trim().ToUpperInvariant();
         Symbol = symbol.Trim();

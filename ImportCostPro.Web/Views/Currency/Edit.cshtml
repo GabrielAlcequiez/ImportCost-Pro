@@ -50,7 +50,7 @@
                         <div class="row g-3 mb-3">
                             <div class="col-6">
                                 <label asp-for="ISOCode" class="form-label fw-semibold text-secondary">Código ISO</label>
-                                <input asp-for="ISOCode" class="form-control text-uppercase" maxlength="3" autocomplete="off" />
+                                <input asp-for="ISOCode" class="form-control text-uppercase" maxlength="3" minlength="3" autocomplete="off" />
                                 <span asp-validation-for="ISOCode" class="text-danger small"></span>
                             </div>
                             <div class="col-6">

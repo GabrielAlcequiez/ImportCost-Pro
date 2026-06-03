@@ -11,6 +11,7 @@ namespace ImportCostPro.Web.ViewModels.Currency
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El código ISO es requerido")]
+        [StringLength(3, MinimumLength = 3, ErrorMessage = "El código ISO debe tener exactamente 3 caracteres")]
         public string ISOCode { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El símbolo es requerido")]
