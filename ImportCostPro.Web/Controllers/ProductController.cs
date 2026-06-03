@@ -174,6 +174,13 @@ namespace ImportCostPro.Web.Controllers
                 viewModel.TariffCategories = await GetTariffCategorySelectListAsync(viewModel.TariffCategoryId);
                 return View(viewModel);
             }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                viewModel.Countries = await GetCountrySelectListAsync(viewModel.CountryId);
+                viewModel.TariffCategories = await GetTariffCategorySelectListAsync(viewModel.TariffCategoryId);
+                return View(viewModel);
+            }
         }
 
         // GET: /Product/Delete/{id}

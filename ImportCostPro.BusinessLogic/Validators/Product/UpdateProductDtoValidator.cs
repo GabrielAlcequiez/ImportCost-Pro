@@ -1,6 +1,7 @@
 using FluentValidation;
 using ImportCostPro.BusinessLogic.DTOs.Product;
 using ImportCostPro.Database.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ImportCostPro.BusinessLogic.Validators.Product
 {
@@ -71,6 +72,33 @@ namespace ImportCostPro.BusinessLogic.Validators.Product
                     .NotNull().WithMessage("If length, width or height is provided, all three fields must have a value.")
                     .GreaterThan(0).WithMessage("Height must be greater than 0.");
             });
+
+            RuleFor(x => x)
+                .MustAsync(async (dto, cancellationToken) =>
+                {
+                    bool hasOrders = await unitOfWork.Products.HasRelatedEntitiesAsync(dto.Id);
+                    if (!hasOrders) return true;
+
+                    var original = await unitOfWork.Products.AsQueryable()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(p => p.Id == dto.Id);
+
+                    if (original == null) return false;
+
+                    bool codeChanged = original.CodeReference != dto.CodeReference.Trim();
+                    bool countryChanged = original.CountryId != dto.CountryId;
+                    bool tariffChanged = original.TariffCategoryId != dto.TariffCategoryId;
+                    bool weightChanged = original.UnitWeight != dto.UnitWeight;
+                    bool lengthChanged = original.Length != dto.Length;
+                    bool widthChanged = original.Width != dto.Width;
+                    bool heightChanged = original.Height != dto.Height;
+
+                    if (codeChanged || countryChanged || tariffChanged || weightChanged || lengthChanged || widthChanged || heightChanged)
+                        return false;
+
+                    return true;
+                })
+                .WithMessage("No se puede modificar este campo porque el producto ya está asociado a órdenes de importación.");
         }
     }
 }
