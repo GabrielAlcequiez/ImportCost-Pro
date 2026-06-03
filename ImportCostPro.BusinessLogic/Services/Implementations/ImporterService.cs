@@ -6,6 +6,7 @@ using FluentValidation;
 using ImportCostPro.BusinessLogic.DTOs.Importer;
 using ImportCostPro.BusinessLogic.Services.Interfaces;
 using ImportCostPro.Database.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ImportCostPro.BusinessLogic.Services.Implementations
 {
@@ -39,16 +40,24 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 await _unitOfWork.Importers.AddAsync(importer);
                 await _unitOfWork.CompleteAsync();
 
+            var importerSaved = await _unitOfWork.Importers.AsQueryable()
+                .Include(x => x.Country)
+                .FirstOrDefaultAsync(x => x.Id == importer.Id);
+
+            if (importerSaved == null)
+                throw new KeyNotFoundException("The saved importer cannot be recovered");
+
             return new ImporterDto
             {
-                Id = importer.Id,
-                Name = importer.Name,
-                TaxId = importer.TaxId,
-                CountryId = importer.CountryId,
-                Phone = importer.Phone,
-                Email = importer.Email,
-                Address = importer.Address,
-                IsActive = importer.IsActive
+                Id = importerSaved.Id,
+                Name = importerSaved.Name,
+                TaxId = importerSaved.TaxId,
+                CountryId = importerSaved.CountryId,
+                CountryName = importerSaved.Country.Name,
+                Phone = importerSaved.Phone,
+                Email = importerSaved.Email,
+                Address = importerSaved.Address,
+                IsActive = importerSaved.IsActive
             };
 
         }
@@ -75,30 +84,29 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<List<ImporterDto>> GetAllImportersAsync()
         {
-            var importers = await _unitOfWork.Importers.GetAllAsync();
-            var dtos = new List<ImporterDto>();
-            foreach (var importer in importers)
-            {
-                dtos.Add(new ImporterDto
-                {
-                    Id = importer.Id,
-                    Name = importer.Name,
-                    TaxId = importer.TaxId,
-                    CountryId = importer.CountryId,
-            CountryName = importer.Country?.Name ?? string.Empty,
-                    Phone = importer.Phone,
-                    Email = importer.Email,
-                    Address = importer.Address,
-                    IsActive = importer.IsActive
-                });
-            }
+            var importers = await _unitOfWork.Importers.AsQueryable()
+                .Include(x => x.Country)
+                .ToListAsync();
 
-            return dtos;
+            return importers.Select(i => new ImporterDto
+            {
+                Id = i.Id,
+                Name = i.Name,
+                TaxId = i.TaxId,
+                CountryId = i.CountryId,
+                CountryName = i.Country.Name,
+                Phone = i.Phone,
+                Email = i.Email,
+                Address = i.Address,
+                IsActive = i.IsActive
+            }).ToList();
         }
 
         public async Task<ImporterDto?> GetImporterByIdAsync(Guid id)
         {
-            var importer = await _unitOfWork.Importers.GetByIdAsync(id);
+            var importer = await _unitOfWork.Importers.AsQueryable()
+                .Include(x => x.Country)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (importer == null) return null;
             return new ImporterDto
             {
@@ -106,7 +114,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 Name = importer.Name,
                 TaxId = importer.TaxId,
                 CountryId = importer.CountryId,
-                CountryName = importer.Country?.Name ?? string.Empty,
+                CountryName = importer.Country.Name,
                 Phone = importer.Phone,
                 Email = importer.Email,
                 Address = importer.Address,
@@ -130,17 +138,24 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                  dto.IsActive);
             await _unitOfWork.CompleteAsync();
 
+            var importerSaved = await _unitOfWork.Importers.AsQueryable()
+                .Include(x => x.Country)
+                .FirstOrDefaultAsync(x => x.Id == importer.Id);
+
+            if (importerSaved == null)
+                throw new KeyNotFoundException("The saved importer cannot be recovered");
+
             return new ImporterDto
             {
-                Id = importer.Id,
-                Name = importer.Name,
-                TaxId = importer.TaxId,
-                CountryId = importer.CountryId,
-                CountryName = importer.Country?.Name ?? string.Empty,
-                Phone = importer.Phone,
-                Email = importer.Email,
-                Address = importer.Address,
-                IsActive = importer.IsActive
+                Id = importerSaved.Id,
+                Name = importerSaved.Name,
+                TaxId = importerSaved.TaxId,
+                CountryId = importerSaved.CountryId,
+                CountryName = importerSaved.Country.Name,
+                Phone = importerSaved.Phone,
+                Email = importerSaved.Email,
+                Address = importerSaved.Address,
+                IsActive = importerSaved.IsActive
             };
 
         }
