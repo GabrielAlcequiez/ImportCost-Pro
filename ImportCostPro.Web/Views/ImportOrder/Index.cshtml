@@ -83,6 +83,12 @@
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info me-1" title="Detalles">
                                     <i class="bi bi-eye"></i>
                                 </a>
+                                @if (item.Status == ImportOrderStatus.Calculated || item.Status == ImportOrderStatus.Closed)
+                                {
+                                    <a href="@Url.Action("DetailsByOrder", "LandedCostCalculation", new { orderId = item.Id })" class="btn btn-sm btn-outline-success me-1" title="Ver Cálculo">
+                                        <i class="bi bi-calculator"></i>
+                                    </a>
+                                }
                                 @if (item.Status == ImportOrderStatus.Open)
                                 {
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning me-1" title="Editar">

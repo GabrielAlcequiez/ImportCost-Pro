@@ -4,6 +4,21 @@
 }
 
 <div class="container-fluid px-4 py-4">
+    @if (TempData["SuccessMessage"] is string successMsg)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@successMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] is string errorMsg)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
     <div class="row justify-content-center">
         <div class="col-12 col-lg-10">
             <a asp-action="Index" class="btn btn-link text-decoration-none p-0 mb-3 text-secondary">
@@ -156,12 +171,41 @@
                 </div>
             </div>
 
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end align-items-center">
                 <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
                 @if (Model.Status == ImportOrderStatus.Open)
                 {
                     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
-                        <i class="bi bi-pencil me-2"></i>Editar
+                        <i class="bi bi-pencil me-2"></i>Editar Orden
+                    </a>
+                    <form asp-controller="LandedCostCalculation" asp-action="Calculate" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="importOrderId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-calculator-fill me-2"></i>Calcular Costo Terrestre
+                        </button>
+                    </form>
+                }
+                else if (Model.Status == ImportOrderStatus.Calculated)
+                {
+                    <a href="@Url.Action("DetailsByOrder", "LandedCostCalculation", new { orderId = Model.Id })" class="btn btn-info text-white">
+                        <i class="bi bi-eye-fill me-2"></i>Ver Resultados del Cálculo
+                    </a>
+                    <form asp-action="CloseOrder" asp-route-id="@Model.Id" method="post" class="d-inline"
+                          onsubmit="return confirm('¿Está seguro que desea cerrar esta orden de importación? Una vez cerrada, no podrá modificar sus datos, productos, gastos ni resultado de cálculo.');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-lock-fill me-2"></i>Confirmar y Cerrar Orden
+                        </button>
+                    </form>
+                }
+                else if (Model.Status == ImportOrderStatus.Closed)
+                {
+                    <span class="badge bg-secondary-subtle text-secondary border border-secondary p-2 me-2">
+                        <i class="bi bi-shield-lock-fill me-1"></i>Cerrada (Lectura)
+                    </span>
+                    <a href="@Url.Action("DetailsByOrder", "LandedCostCalculation", new { orderId = Model.Id })" class="btn btn-info text-white">
+                        <i class="bi bi-eye-fill me-2"></i>Ver Resultados del Cálculo
                     </a>
                 }
             </div>
