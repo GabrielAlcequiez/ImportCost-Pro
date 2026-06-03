@@ -29,19 +29,27 @@ namespace ImportCostPro.BusinessLogic.Validators.Product
 
             RuleFor(x => x.CountryId)
                 .NotEmpty().WithMessage("The country is required")
-                .MustAsync(async (countryId, cancellationToken) =>
+                .MustAsync(async (dto, countryId, cancellationToken) =>
                 {
                     var country = await unitOfWork.Countries.GetByIdAsync(countryId);
-                    return country != null && country.IsActive;
+                    if (country == null) return false;
+                    if (country.IsActive) return true;
+
+                    var product = await unitOfWork.Products.GetByIdAsync(dto.Id);
+                    return product != null && product.CountryId == countryId;
                 })
                 .WithMessage("The country need to be already active");
 
             RuleFor(x => x.TariffCategoryId)
                 .NotEmpty().WithMessage("The tariff category is required")
-                .MustAsync(async (categoryId, cancellationToken) =>
+                .MustAsync(async (dto, categoryId, cancellationToken) =>
                 {
                     var category = await unitOfWork.TariffCategories.GetByIdAsync(categoryId);
-                    return category != null && category.IsActive;
+                    if (category == null) return false;
+                    if (category.IsActive) return true;
+
+                    var product = await unitOfWork.Products.GetByIdAsync(dto.Id);
+                    return product != null && product.TariffCategoryId == categoryId;
                 })
                 .WithMessage("The selected tariff category needs to exists.");
 

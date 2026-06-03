@@ -44,7 +44,7 @@
                         <div class="row g-3 mb-3">
                             <div class="col-md-4">
                                 <label asp-for="TariffCode" class="form-label fw-semibold text-secondary">Código Arancelario</label>
-                                <input asp-for="TariffCode" class="form-control" autocomplete="off" />
+                                <input asp-for="TariffCode" class="form-control" autocomplete="off" maxlength="20" />
                                 <span asp-validation-for="TariffCode" class="text-danger small"></span>
                             </div>
                             <div class="col-md-8">
