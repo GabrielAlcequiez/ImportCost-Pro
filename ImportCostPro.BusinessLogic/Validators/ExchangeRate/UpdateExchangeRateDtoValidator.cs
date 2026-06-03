@@ -47,8 +47,7 @@ namespace ImportCostPro.BusinessLogic.Validators.ExchangeRate
                         dto.Id);
 
                     return !exists;
-                }).WithMessage("Ya existe una tasa de cambio activa para esta moneda origen, moneda destino y fecha de vigencia.")
-                .WithName("UniqueRateConstraint");
+                })                .WithMessage("Ya existe una tasa de cambio activa para esta moneda origen, moneda destino y fecha de vigencia.");
         }       
     }
 }
