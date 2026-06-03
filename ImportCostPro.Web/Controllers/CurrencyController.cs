@@ -168,6 +168,12 @@ namespace ImportCostPro.Web.Controllers
                 TempData["DeleteType"] = "error";
                 return RedirectToAction(nameof(Index));
             }
+            catch (InvalidOperationException ex)
+            {
+                TempData["DeleteMessage"] = ex.Message;
+                TempData["DeleteType"] = "error";
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

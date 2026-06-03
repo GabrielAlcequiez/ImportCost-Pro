@@ -73,6 +73,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             if (currencyCreateDto.IsLocalCurrency)
             {
                 await DeactivateExistingLocalCurrenciesAsync();
+                await _unitOfWork.CompleteAsync();
             }
 
 
@@ -109,6 +110,7 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             if (currencyUpdateDto.IsLocalCurrency)
             {
                 await DeactivateExistingLocalCurrenciesAsync(id);
+                await _unitOfWork.CompleteAsync();
             }
 
 
