@@ -1,0 +1,170 @@
+@model UpdateImportOrderViewModel
+@{
+    ViewData["Title"] = "Detalles de Orden";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <a asp-action="Index" class="btn btn-link text-decoration-none p-0 mb-3 text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Volver al listado
+            </a>
+
+            <div class="card shadow-sm border-0 mt-2 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-info bg-opacity-10 text-info rounded p-2 me-3">
+                            <i class="bi bi-clipboard-data fs-3"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title fw-bold mb-0 text-dark">@Model.OrderNumber</h4>
+                            <small class="text-muted">
+                                @switch (Model.Status)
+                                {
+                                    case ImportOrderStatus.Open: <span class="badge bg-primary">Abierta</span> break;
+                                    case ImportOrderStatus.Calculated: <span class="badge bg-success">Calculada</span> break;
+                                    case ImportOrderStatus.Closed: <span class="badge bg-secondary">Cerrada</span> break;
+                                    case ImportOrderStatus.Cancelled: <span class="badge bg-danger">Cancelada</span> break;
+                                }
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted mb-4" />
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block">Fecha de Orden</span>
+                            <strong>@Model.OrderDate.ToString("dd/MM/yyyy")</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block">Modo de Transporte</span>
+                            <strong>@Model.TransportMode.ToDisplayName()</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block">Importador</span>
+                            <strong>@Model.ImporterName</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block">Proveedor</span>
+                            <strong>@Model.SupplierName</strong>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block">País de Origen</span>
+                            <strong>@Model.CountryName</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block">Moneda</span>
+                            <strong>@Model.CurrencyCode</strong>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block">Tasa de Cambio</span>
+                            <strong>@Model.ExchangeRateValue.ToString("N4")</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Productos *@
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-box me-2"></i>Productos</h5>
+
+                    @if (!Model.Details.Any())
+                    {
+                        <p class="text-muted small mb-0">No hay productos en esta orden.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Costo FOB</th>
+                                        <th>Peso</th>
+                                        <th>Arancel%</th>
+                                        <th>Margen%</th>
+                                        <th>Total FOB</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var detail in Model.Details)
+                                    {
+                                        <tr>
+                                            <td><small>@detail.ProductCodeReference - @detail.ProductName</small></td>
+                                            <td>@detail.Quantity.ToString("N4")</td>
+                                            <td>@detail.UnitCostFob.ToString("N4")</td>
+                                            <td>@detail.UnitWeight.ToString("N4")</td>
+                                            <td>@detail.CustomDutyPercentage.ToString("N2")%</td>
+                                            <td>@detail.DesiredProfitMargin.ToString("N2")%</td>
+                                            <td><strong>@detail.TotalCostFob.ToString("N2")</strong></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* Gastos *@
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-cash me-2"></i>Gastos</h5>
+
+                    @if (!Model.Expenses.Any())
+                    {
+                        <p class="text-muted small mb-0">No hay gastos registrados.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Monto</th>
+                                        <th>Moneda</th>
+                                        <th>Tasa</th>
+                                        <th>Monto Local</th>
+                                        <th>Prorrateo</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var expense in Model.Expenses)
+                                    {
+                                        <tr>
+                                            <td><small>@expense.ExpenseType.ToDisplayName()</small></td>
+                                            <td>@expense.Amount.ToString("N2")</td>
+                                            <td>@expense.CurrencyCode</td>
+                                            <td>@expense.ExchangeRateValue.ToString("N4")</td>
+                                            <td><strong>@expense.AmountInLocalCurrency.ToString("N2")</strong></td>
+                                            <td><small>@expense.ApportionmentMethod.ToDisplayName()</small></td>
+                                            <td>@expense.ExpenseDate.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+                @if (Model.Status == ImportOrderStatus.Open)
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="bi bi-pencil me-2"></i>Editar
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
