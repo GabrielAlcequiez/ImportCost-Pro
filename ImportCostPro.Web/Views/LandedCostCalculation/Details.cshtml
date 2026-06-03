@@ -1,0 +1,189 @@
+@model LandedCostCalculationViewModel
+@{
+    ViewData["Title"] = $"Resultados del Cálculo - {Model.OrderNumber}";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a asp-action="Index" class="btn btn-link text-decoration-none p-0 text-secondary mb-2">
+                <i class="bi bi-arrow-left me-1"></i> Volver al listado de cálculos
+            </a>
+            <h2 class="text-secondary fw-bold mb-0">Resultados del Cálculo Oficial</h2>
+            <small class="text-muted">Orden: <strong>@Model.OrderNumber</strong> | Fecha del cálculo: @Model.CalculationDate.ToString("dd/MM/yyyy HH:mm")</small>
+        </div>
+        <div class="d-flex gap-2">
+            @if (Model.OrderStatus == ImportOrderStatus.Calculated)
+            {
+                <form asp-action="CloseOrder" asp-controller="ImportOrder" asp-route-id="@Model.ImportOrderId" method="post"
+                      onsubmit="return confirm('¿Está seguro que desea cerrar esta orden de importación? Una vez cerrada, no podrá modificar sus datos, productos, gastos ni resultado de cálculo.');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success shadow-sm">
+                        <i class="bi bi-lock-fill me-2"></i>Confirmar y Cerrar Orden
+                    </button>
+                </form>
+            }
+            else if (Model.OrderStatus == ImportOrderStatus.Closed)
+            {
+                <span class="badge bg-secondary fs-6 p-2 d-flex align-items-center">
+                    <i class="bi bi-shield-lock-fill me-2"></i>Orden Cerrada (Lectura)
+                </span>
+            }
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMsg)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@successMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* Ficha de Resumen de Totales *@
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-receipt me-2 text-primary"></i>Resumen General de Costos (@Model.LocalCurrencyCode)</h5>
+            <hr class="text-muted mb-4" />
+            
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-sm-4 col-md-3">
+                    <span class="text-muted small d-block">Moneda Local del Sistema</span>
+                    <strong class="fs-5">@Model.LocalCurrencyCode</strong>
+                </div>
+                <div class="col-6 col-sm-4 col-md-3">
+                    <span class="text-muted small d-block">Tasa de Cambio de la Orden</span>
+                    <strong class="fs-5">@Model.ExchangeRateUsed.ToString("N4")</strong>
+                </div>
+                <div class="col-6 col-sm-4 col-md-3">
+                    <span class="text-muted small d-block">ITBIS General Aplicado</span>
+                    <strong class="fs-5">@Model.GeneralItbisPercentageUsed.ToString("N2")%</strong>
+                </div>
+                <div class="col-6 col-sm-4 col-md-3">
+                    <span class="text-muted small d-block">Tasa Servicio Aduanal</span>
+                    <strong class="fs-5">@Model.CustomsServiceFeePercentageUsed.ToString("N2")%</strong>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-3 bg-light rounded border border-light-subtle">
+                        <span class="text-muted small d-block">FOB Total (Moneda Orden)</span>
+                        <h4 class="fw-bold mb-0 text-secondary">@Model.FobTotalOriginal.ToString("N2")</h4>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-3 bg-light rounded border border-light-subtle">
+                        <span class="text-muted small d-block">FOB Total Local (@Model.LocalCurrencyCode)</span>
+                        <h4 class="fw-bold mb-0 text-secondary">@Model.FobTotalLocal.ToString("N2")</h4>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-3 bg-light rounded border border-light-subtle">
+                        <span class="text-muted small d-block">Flete Internacional Total</span>
+                        <h4 class="fw-bold mb-0 text-secondary">@Model.FreightTotalLocal.ToString("N2")</h4>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-3 bg-light rounded border border-light-subtle">
+                        <span class="text-muted small d-block">Seguro Internacional Total</span>
+                        <h4 class="fw-bold mb-0 text-secondary">@Model.InsuranceTotalLocal.ToString("N2")</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-3 bg-info bg-opacity-10 rounded border border-info-subtle">
+                        <span class="text-info-emphasis small d-block">Valor CIF Total</span>
+                        <h4 class="fw-bold mb-0 text-info-emphasis">@Model.CifTotalLocal.ToString("N2")</h4>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-3 bg-light rounded border border-light-subtle">
+                        <span class="text-muted small d-block">Total Aranceles + Imp. Selectivo</span>
+                        <h4 class="fw-bold mb-0 text-secondary">@((Model.DutyTotalLocal + Model.SelectiveTaxTotalLocal).ToString("N2"))</h4>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-3 bg-light rounded border border-light-subtle">
+                        <span class="text-muted small d-block">Total Tasas + ITBIS Local</span>
+                        <h4 class="fw-bold mb-0 text-secondary">@((Model.CustomsServiceFeeTotalLocal + Model.ItbisTotalLocal).ToString("N2"))</h4>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-3 bg-success bg-opacity-10 rounded border border-success-subtle">
+                        <span class="text-success-emphasis small d-block">Costo Total de Importación</span>
+                        <h3 class="fw-bold mb-0 text-success">@Model.ImportTotalCost.ToString("N2")</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Tabla Detallada por Producto *@
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-grid-3x3-gap me-2 text-primary"></i>Desglose Prorrateado por Producto</h5>
+            <hr class="text-muted mb-4" />
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle table-sm text-nowrap">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-end">Cant.</th>
+                            <th class="text-end">FOB Local</th>
+                            <th class="text-end">Flete Asig.</th>
+                            <th class="text-end">Seguro Asig.</th>
+                            <th class="text-end">CIF Local</th>
+                            <th class="text-end">Arancel</th>
+                            <th class="text-end">I.S.C.</th>
+                            <th class="text-end">Aduana</th>
+                            <th class="text-end">ITBIS</th>
+                            <th class="text-end">Gastos Loc.</th>
+                            <th class="text-end">Costo Total</th>
+                            <th class="text-end bg-success-subtle text-dark">Costo Unit.</th>
+                            <th class="text-center">Margen</th>
+                            <th class="text-end bg-primary-subtle text-dark">Precio Sug.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detail in Model.Details)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-dark text-truncate" style="max-width: 150px;" title="@detail.ProductName">@detail.ProductName</div>
+                                    <small class="text-muted">Ref: @detail.ProductCodeReference</small>
+                                </td>
+                                <td class="text-end">@detail.Quantity.ToString("N0")</td>
+                                <td class="text-end">@detail.FobLocal.ToString("N2")</td>
+                                <td class="text-end">@detail.FreightAssigned.ToString("N2")</td>
+                                <td class="text-end">@detail.InsuranceAssigned.ToString("N2")</td>
+                                <td class="text-end fw-semibold">@detail.CifLocal.ToString("N2")</td>
+                                <td class="text-end">
+                                    @detail.DutyCalculated.ToString("N2")
+                                    <div class="text-muted small" style="font-size: 0.7rem;">(@detail.TariffPercentageUsed.ToString("N0")%)</div>
+                                </td>
+                                <td class="text-end">
+                                    @detail.SelectiveTaxCalculated.ToString("N2")
+                                    @if (detail.ExciseTaxPercentageUsed > 0)
+                                    {
+                                        <div class="text-muted small" style="font-size: 0.7rem;">(@detail.ExciseTaxPercentageUsed.ToString("N0")%)</div>
+                                    }
+                                </td>
+                                <td class="text-end">@detail.CustomsServiceFeeCalculated.ToString("N2")</td>
+                                <td class="text-end">@detail.ItbisCalculated.ToString("N2")</td>
+                                <td class="text-end">@detail.LocalExpensesAssigned.ToString("N2")</td>
+                                <td class="text-end fw-bold text-secondary">@detail.ImportTotalCost.ToString("N2")</td>
+                                <td class="text-end fw-bold text-success bg-success-subtle bg-opacity-25">@detail.UnitLandedCost.ToString("N2")</td>
+                                <td class="text-center">@detail.DesiredProfitMargin.ToString("N0")%</td>
+                                <td class="text-end fw-bold text-primary bg-primary-subtle bg-opacity-25">@detail.SuggestedSellingPrice.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
