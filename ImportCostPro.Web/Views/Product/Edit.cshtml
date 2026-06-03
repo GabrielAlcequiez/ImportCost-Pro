@@ -1,0 +1,121 @@
+@model UpdateProductViewModel
+@{
+    ViewData["Title"] = "Editar Producto";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <a asp-action="Index" class="btn btn-link text-decoration-none p-0 mb-3 text-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Volver al listado
+            </a>
+
+            <div class="card shadow-sm border-0 mt-2">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded p-2 me-3">
+                            <i class="bi bi-pencil-square fs-3"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title fw-bold mb-0 text-dark">Editar Producto</h4>
+                            <small class="text-muted">Modifica los datos del producto.</small>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted mb-4" />
+
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        @if (!Model.IsActive)
+                        {
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" id="isActiveSwitch" />
+                                    <label class="form-check-label fw-semibold text-secondary" for="isActiveSwitch">Activar</label>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="IsActive" />
+                        }
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <label asp-for="Name" class="form-label fw-semibold text-secondary">Nombre del Producto</label>
+                                <input asp-for="Name" class="form-control" autocomplete="off" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="CodeReference" class="form-label fw-semibold text-secondary">Código de Referencia</label>
+                                <input asp-for="CodeReference" class="form-control" autocomplete="off" />
+                                <span asp-validation-for="CodeReference" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="CountryId" class="form-label fw-semibold text-secondary">País de Origen</label>
+                                <select asp-for="CountryId" asp-items="Model.Countries" class="form-select">
+                                    <option value="">-- Selecciona un país --</option>
+                                </select>
+                                <span asp-validation-for="CountryId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="TariffCategoryId" class="form-label fw-semibold text-secondary">Categoría Arancelaria</label>
+                                <select asp-for="TariffCategoryId" asp-items="Model.TariffCategories" class="form-select">
+                                    <option value="">-- Selecciona una categoría --</option>
+                                </select>
+                                <span asp-validation-for="TariffCategoryId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="UnitWeight" class="form-label fw-semibold text-secondary">Peso Unitario (kg)</label>
+                                <input asp-for="UnitWeight" class="form-control" type="number" step="0.001" min="0.001" autocomplete="off" />
+                                <span asp-validation-for="UnitWeight" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="UnitOfMeasure" class="form-label fw-semibold text-secondary">Unidad de Medida</label>
+                                <select asp-for="UnitOfMeasure" asp-items="Html.GetEnumSelectList<UnitOfMeasure>()" class="form-select">
+                                    <option value="">-- Selecciona --</option>
+                                </select>
+                                <span asp-validation-for="UnitOfMeasure" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="w-100">
+                                    <label class="form-label fw-semibold text-secondary">Dimensiones <span class="text-muted small">(opcional)</span></label>
+                                    <div class="row g-1">
+                                        <div class="col-4">
+                                            <input asp-for="Length" class="form-control" placeholder="Largo" type="number" step="0.01" min="0" />
+                                        </div>
+                                        <div class="col-4">
+                                            <input asp-for="Width" class="form-control" placeholder="Ancho" type="number" step="0.01" min="0" />
+                                        </div>
+                                        <div class="col-4">
+                                            <input asp-for="Height" class="form-control" placeholder="Alto" type="number" step="0.01" min="0" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-semibold text-secondary">Descripción <span class="text-muted small">(opcional)</span></label>
+                            <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-2 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-warning px-4">
+                                <i class="bi bi-save me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
