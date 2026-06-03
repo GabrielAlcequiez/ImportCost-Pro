@@ -16,6 +16,7 @@ namespace ImportCostPro.Web.ViewModels.Supplier
 
         public string? Email { get; set; }
 
+        [StringLength(20, ErrorMessage = "El teléfono no puede tener más de 20 caracteres")]
         public string? Telephone { get; set; }
 
         [Required(ErrorMessage = "La moneda es requerida")]

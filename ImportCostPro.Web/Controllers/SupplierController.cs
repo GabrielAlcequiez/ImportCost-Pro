@@ -150,6 +150,13 @@ namespace ImportCostPro.Web.Controllers
                 viewModel.Currencies = await GetCurrencySelectListAsync(viewModel.CurrencyId);
                 return View(viewModel);
             }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                viewModel.Countries = await GetCountrySelectListAsync(viewModel.CountryId);
+                viewModel.Currencies = await GetCurrencySelectListAsync(viewModel.CurrencyId);
+                return View(viewModel);
+            }
         }
 
         // GET: /Supplier/Delete/{id}
