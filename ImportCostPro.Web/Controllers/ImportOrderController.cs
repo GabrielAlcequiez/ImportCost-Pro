@@ -15,6 +15,7 @@ namespace ImportCostPro.Web.Controllers
         private readonly ICountryService _countryService;
         private readonly ICurrencyService _currencyService;
         private readonly IProductService _productService;
+        private readonly IExchangeRateService _exchangeRateService;
 
         public ImportOrderController(
             IImportOrderService service,
@@ -22,7 +23,8 @@ namespace ImportCostPro.Web.Controllers
             ISupplierService supplierService,
             ICountryService countryService,
             ICurrencyService currencyService,
-            IProductService productService)
+            IProductService productService,
+            IExchangeRateService exchangeRateService)
         {
             _service = service;
             _importerService = importerService;
@@ -30,6 +32,7 @@ namespace ImportCostPro.Web.Controllers
             _countryService = countryService;
             _currencyService = currencyService;
             _productService = productService;
+            _exchangeRateService = exchangeRateService;
         }
 
         // GET: /ImportOrder
@@ -455,6 +458,91 @@ namespace ImportCostPro.Web.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: /ImportOrder/CloseOrder/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CloseOrder(Guid id)
+        {
+            try
+            {
+                await _service.CloseOrderAsync(id);
+                TempData["SuccessMessage"] = "Orden de importación cerrada y archivada exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error al cerrar la orden: {ex.Message}";
+            }
+
+            var referer = Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referer) && referer.Contains("LandedCostCalculation/Details", StringComparison.OrdinalIgnoreCase))
+            {
+                return Redirect(referer);
+            }
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        // GET: /ImportOrder/GetLatestExchangeRate
+        [HttpGet]
+        public async Task<IActionResult> GetLatestExchangeRate(Guid currencyId, DateTime orderDate)
+        {
+            try
+            {
+                var currencies = await _currencyService.GetAllCurrenciesAsync();
+                var localCurrency = currencies.FirstOrDefault(c => c.IsLocalCurrency);
+
+                if (localCurrency == null)
+                {
+                    return Json(new { success = false, message = "Moneda local no configurada." });
+                }
+
+                if (currencyId == localCurrency.Id)
+                {
+                    return Json(new { success = true, rate = 1.0m });
+                }
+
+                var rates = await _exchangeRateService.GetAllExchangeRatesAsync();
+                var latestRate = rates
+                    .Where(r => r.SourceCurrencyId == currencyId && 
+                                r.TargetCurrencyId == localCurrency.Id && 
+                                r.EffectiveDate.Date <= orderDate.Date && 
+                                r.IsActive)
+                    .OrderByDescending(r => r.EffectiveDate)
+                    .FirstOrDefault();
+
+                if (latestRate == null)
+                {
+                    return Json(new { success = false, message = "No existe una tasa de cambio activa para esta moneda en la fecha seleccionada." });
+                }
+
+                return Json(new { success = true, rate = latestRate.RateValue });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // GET: /ImportOrder/GetProductDetails
+        [HttpGet]
+        public async Task<IActionResult> GetProductDetails(Guid productId)
+        {
+            try
+            {
+                var p = await _productService.GetProductByIdAsync(productId);
+                if (p == null)
+                {
+                    return Json(new { success = false, message = "Producto no encontrado." });
+                }
+
+                return Json(new { success = true, unitWeight = p.UnitWeight, customDutyPercentage = p.TariffPercentage });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         // --- Dropdown Helpers ---
