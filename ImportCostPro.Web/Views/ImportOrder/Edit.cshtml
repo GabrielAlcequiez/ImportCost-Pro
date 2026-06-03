@@ -444,3 +444,101 @@
         </div>
     </div>
 }
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Exchange Rate Autocomplete for Order Header
+            const currencySelect = document.getElementById("CurrencyId");
+            const dateInput = document.getElementById("OrderDate");
+            const rateInput = document.getElementById("ExchangeRateValue");
+
+            async function fetchExchangeRate() {
+                if (!currencySelect || !dateInput || !rateInput) return;
+                const currencyId = currencySelect.value;
+                const date = dateInput.value;
+
+                if (!currencyId || !date) return;
+
+                try {
+                    const response = await fetch(`/ImportOrder/GetLatestExchangeRate?currencyId=${currencyId}&orderDate=${date}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        rateInput.value = data.rate.toFixed(4);
+                    } else {
+                        rateInput.value = "0.0000";
+                        console.warn(data.message || "No se pudo obtener la tasa de cambio para la fecha indicada.");
+                    }
+                } catch (error) {
+                    console.error("Error al obtener la tasa de cambio:", error);
+                }
+            }
+
+            if (currencySelect) currencySelect.addEventListener("change", fetchExchangeRate);
+            if (dateInput) dateInput.addEventListener("change", fetchExchangeRate);
+
+            // 2. Product Details Autocomplete (Weight & Tariff)
+            const productSelect = document.querySelector('#addProductModal select[name="productId"]');
+            const weightInput = document.querySelector('#addProductModal input[name="unitWeight"]');
+            const tariffInput = document.querySelector('#addProductModal input[name="customDutyPercentage"]');
+
+            async function fetchProductDetails() {
+                if (!productSelect || !weightInput || !tariffInput) return;
+                const productId = productSelect.value;
+
+                if (!productId) {
+                    weightInput.value = "";
+                    tariffInput.value = "0.00";
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/ImportOrder/GetProductDetails?productId=${productId}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        weightInput.value = data.unitWeight.toFixed(4);
+                        tariffInput.value = data.customDutyPercentage.toFixed(2);
+                    } else {
+                        console.warn(data.message || "No se pudieron obtener los detalles del producto.");
+                    }
+                } catch (error) {
+                    console.error("Error al obtener detalles del producto:", error);
+                }
+            }
+
+            if (productSelect) productSelect.addEventListener("change", fetchProductDetails);
+
+            // 3. Exchange Rate Autocomplete for Expenses Modal
+            const expCurrencySelect = document.querySelector('#addExpenseModal select[name="currencyId"]');
+            const expDateInput = document.querySelector('#addExpenseModal input[name="expenseDate"]');
+            const expRateInput = document.querySelector('#addExpenseModal input[name="exchangeRateValue"]');
+
+            async function fetchExpenseExchangeRate() {
+                if (!expCurrencySelect || !expDateInput || !expRateInput) return;
+                const currencyId = expCurrencySelect.value;
+                const date = expDateInput.value;
+
+                if (!currencyId || !date) return;
+
+                try {
+                    const response = await fetch(`/ImportOrder/GetLatestExchangeRate?currencyId=${currencyId}&orderDate=${date}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        expRateInput.value = data.rate.toFixed(4);
+                    } else {
+                        expRateInput.value = "0.0000";
+                        console.warn(data.message || "No se pudo obtener la tasa de cambio para la fecha indicada.");
+                    }
+                } catch (error) {
+                    console.error("Error al obtener la tasa de cambio del gasto:", error);
+                }
+            }
+
+            if (expCurrencySelect) expCurrencySelect.addEventListener("change", fetchExpenseExchangeRate);
+            if (expDateInput) expDateInput.addEventListener("change", fetchExpenseExchangeRate);
+        });
+    </script>
+}

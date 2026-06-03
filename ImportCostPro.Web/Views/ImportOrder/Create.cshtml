@@ -98,3 +98,37 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currencySelect = document.getElementById("CurrencyId");
+            const dateInput = document.getElementById("OrderDate");
+            const rateInput = document.getElementById("ExchangeRateValue");
+
+            async function fetchExchangeRate() {
+                const currencyId = currencySelect.value;
+                const date = dateInput.value;
+
+                if (!currencyId || !date) return;
+
+                try {
+                    const response = await fetch(`/ImportOrder/GetLatestExchangeRate?currencyId=${currencyId}&orderDate=${date}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        rateInput.value = data.rate.toFixed(4);
+                    } else {
+                        rateInput.value = "0.0000";
+                        console.warn(data.message || "No se pudo obtener la tasa de cambio para la fecha indicada.");
+                    }
+                } catch (error) {
+                    console.error("Error al obtener la tasa de cambio:", error);
+                }
+            }
+
+            currencySelect.addEventListener("change", fetchExchangeRate);
+            dateInput.addEventListener("change", fetchExchangeRate);
+        });
+    </script>
+}
