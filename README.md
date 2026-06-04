@@ -1,7 +1,4 @@
 # ImportCost-Pro
-
-Mini Proyecto Pro según Leo
-
 ## Autores
 - Jose Antonio Rincon (2025-1426)
 - Gabriel Enmanuel Alcequiez (2025-1062)
