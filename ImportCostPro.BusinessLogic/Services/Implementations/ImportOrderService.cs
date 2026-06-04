@@ -35,8 +35,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             _updateExpenseValidator = updateExpenseValidator;
         }
 
-        // ─── Queries ─────────────────────────────────────────────────────────────
-
         public async Task<List<ImportOrderDto>> GetAllAsync()
         {
             var orders = await _unitOfWork.ImportOrders.GetAllWithDetailsAsync();
@@ -48,8 +46,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             var order = await _unitOfWork.ImportOrders.GetByIdWithDetailsAsync(id);
             return order == null ? null : MapToDto(order);
         }
-
-        // ─── Order Header ─────────────────────────────────────────────────────────
 
         public async Task<ImportOrderDto> CreateAsync(CreateImportOrderDto dto)
         {
@@ -69,7 +65,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             await _unitOfWork.ImportOrders.AddAsync(order);
             await _unitOfWork.CompleteAsync();
 
-            // Reload with navigation properties
             var saved = await _unitOfWork.ImportOrders.GetByIdWithDetailsAsync(order.Id)
                 ?? throw new InvalidOperationException("Failed to retrieve saved import order.");
             return MapToDto(saved);
@@ -83,7 +78,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             var order = await _unitOfWork.ImportOrders.GetByIdWithDetailsAsync(id)
                 ?? throw new KeyNotFoundException("Import order not found.");
 
-            // Entity method already throws InvalidOperationException if status != Open
             order.UpdateHeader(
                 dto.OrderNumber.Trim(),
                 dto.OrderDate,
@@ -99,8 +93,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             var updated = await _unitOfWork.ImportOrders.GetByIdWithDetailsAsync(id);
             return MapToDto(updated!);
         }
-
-        // ─── Details ──────────────────────────────────────────────────────────────
 
         public async Task<ImportOrderDetailDto> AddDetailAsync(CreateImportOrderDetailDto dto)
         {
@@ -164,7 +156,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             return true;
         }
 
-        // ─── Expenses ─────────────────────────────────────────────────────────────
 
         public async Task<ImportOrderExpenseDto> AddExpenseAsync(CreateImportOrderExpenseDto dto)
         {
@@ -223,7 +214,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             return true;
         }
 
-        // ─── Status Transitions ───────────────────────────────────────────────────
 
         public async Task<ImportOrderDto> CloseOrderAsync(Guid id)
         {
@@ -247,7 +237,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             return MapToDto(order);
         }
 
-        // ─── Mapping Helpers ──────────────────────────────────────────────────────
 
         private static ImportOrderDto MapToDto(ImportOrder o) => new()
         {

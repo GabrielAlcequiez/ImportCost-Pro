@@ -17,12 +17,11 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
 
         public async Task<LandedCostCalculationDto> CalculateAsync(Guid importOrderId)
         {
-            //Fetch  the  order with details and expenses 
             var order = await _unitOfWork.ImportOrders.GetByIdWithDetailsAsync(importOrderId) ?? throw new KeyNotFoundException("Import order not found.");
             if (order.Status != ImportOrderStatus.Open)
                 throw new InvalidOperationException("La orden debe estar en estado Abierta.");
 
-            //validate that at  least one product is added
+            //validate that at  least  product is added
             if (order.Details == null || order.Details.Count == 0)
                 throw new InvalidOperationException("La orden debe tener al menos un producto agregado.");
 
@@ -306,7 +305,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             return calculation == null ? null : MapToDto(calculation);
         }
 
-        //helper
         private static decimal ApportionExpense(
      ImportOrderExpense expense,
      decimal detailFobLocal, decimal totalFobLocal,

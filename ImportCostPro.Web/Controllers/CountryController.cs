@@ -14,7 +14,6 @@ namespace ImportCostPro.Web.Controllers
             _service = service;
         }
 
-        // GET: /Country
         public async Task<IActionResult> Index()
         {
             var dtos = await _service.GetAllCountriesAsync();
@@ -30,13 +29,11 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModels);
         }
 
-        // GET: /Country/Create
         public IActionResult Create()
         {
             return View(new CreateCountryViewModel());
         }
 
-        // POST: /Country/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateCountryViewModel viewModel)
@@ -64,7 +61,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /Country/Edit/{id}
         public async Task<IActionResult> Edit(Guid id)
         {
             var dto = await _service.GetCountryByIdAsync(id);
@@ -83,7 +79,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /Country/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateCountryViewModel viewModel)
@@ -112,8 +107,6 @@ namespace ImportCostPro.Web.Controllers
                 return View(viewModel);
             }
         }
-
-        // GET: /Country/Delete/{id}
         public async Task<IActionResult> Delete(Guid id)
         {
             var dto = await _service.GetCountryByIdAsync(id);
@@ -132,7 +125,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /Country/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

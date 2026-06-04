@@ -11,7 +11,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<UpdateTaxConfigurationDto> _updateValidator;
 
-        // Real-world defaults for the Dominican Republic
         private const decimal DefaultItbisPercentage = 18m;
         private const decimal DefaultCustomsServiceFeePercentage = 3m;
 
@@ -46,7 +45,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             return MapToDto(config);
         }
 
-        // Creates a default record the first time the system needs it
         private async Task<TaxConfiguration> InitializeDefaultAsync()
         {
             var defaultConfig = new TaxConfiguration(DefaultItbisPercentage, DefaultCustomsServiceFeePercentage);

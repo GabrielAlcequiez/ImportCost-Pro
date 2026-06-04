@@ -17,7 +17,6 @@ namespace ImportCostPro.Web.Controllers
             _countryService = countryService;
         }
 
-        // GET: /Importer
         public async Task<IActionResult> Index()
         {
             var dtos = await _service.GetAllImportersAsync();
@@ -38,7 +37,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModels);
         }
 
-        // GET: /Importer/Create
         public async Task<IActionResult> Create()
         {
             var viewModel = new CreateImporterViewModel
@@ -49,7 +47,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /Importer/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateImporterViewModel viewModel)
@@ -85,7 +82,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /Importer/Edit/{id}
         public async Task<IActionResult> Edit(Guid id)
         {
             var dto = await _service.GetImporterByIdAsync(id);
@@ -109,7 +105,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /Importer/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateImporterViewModel viewModel)
@@ -153,7 +148,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /Importer/Delete/{id}
         public async Task<IActionResult> Delete(Guid id)
         {
             var dto = await _service.GetImporterByIdAsync(id);
@@ -174,7 +168,6 @@ namespace ImportCostPro.Web.Controllers
             });
         }
 
-        // POST: /Importer/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -204,7 +197,7 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // Helper: construye el SelectList de países, con la opción pre-seleccionada si se pasa el id
+        // construye el SelectList de países, con la opción pre-seleccionada si se pasa el id
         private async Task<List<SelectListItem>> GetCountrySelectListAsync(Guid? selectedId = null)
         {
             var countries = await _countryService.GetAllCountriesAsync();

@@ -28,7 +28,6 @@ namespace ImportCostPro.Web.Controllers
         {
             var allOrders = await _orderService.GetAllAsync();
 
-            // 1. Populate open orders for the dropdown (sorted by date descending)
             var openOrders = allOrders
                 .Where(o => o.Status == ImportOrderStatus.Open)
                 .OrderByDescending(o => o.OrderDate)
@@ -43,13 +42,11 @@ namespace ImportCostPro.Web.Controllers
                 }).ToList()
             };
 
-            // 2. Set the default selected order to the most recent open one
             if (openOrders.Count != 0)
             {
                 viewModel.SelectedImportOrderId = openOrders.First().Id;
             }
 
-            // 3. Retrieve historical calculations for Calculated or Closed orders
             var historyItems = new List<LandedCostHistoryItemViewModel>();
             var processedOrders = allOrders
                 .Where(o => o.Status == ImportOrderStatus.Calculated || o.Status == ImportOrderStatus.Closed)
@@ -82,7 +79,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /LandedCostCalculation/Calculate
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Calculate(Guid importOrderId)
@@ -103,7 +99,6 @@ namespace ImportCostPro.Web.Controllers
             {
                 TempData["ErrorMessage"] = $"Error al calcular landed cost: {ex.Message}";
                 
-                // If the request was triggered from the import order details view, redirect back there
                 var referer = Request.Headers.Referer.ToString();
                 if (!string.IsNullOrEmpty(referer) && referer.Contains("ImportOrder/Details", StringComparison.OrdinalIgnoreCase))
                 {
@@ -114,7 +109,7 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /LandedCostCalculation/Details/{id}
+    
         public async Task<IActionResult> Details(Guid id)
         {
             var calc = await _calculationService.GetByIdAsync(id);
@@ -180,7 +175,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // GET: /LandedCostCalculation/DetailsByOrder/{orderId}
         public async Task<IActionResult> DetailsByOrder(Guid orderId)
         {
             var calcs = await _calculationService.GetAllByOrderIdAsync(orderId);

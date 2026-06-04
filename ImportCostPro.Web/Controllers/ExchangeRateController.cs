@@ -17,7 +17,6 @@ namespace ImportCostPro.Web.Controllers
             _currencyService = currencyService;
         }
 
-        // GET: /ExchangeRate
         public async Task<IActionResult> Index()
         {
             var dtos = await _service.GetAllExchangeRatesAsync();
@@ -39,7 +38,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModels);
         }
 
-        // GET: /ExchangeRate/Create
         public async Task<IActionResult> Create()
         {
             var viewModel = new CreateExchangeRateViewModel
@@ -50,7 +48,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /ExchangeRate/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateExchangeRateViewModel viewModel)
@@ -84,7 +81,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /ExchangeRate/Edit/{id}
         public async Task<IActionResult> Edit(Guid id)
         {
             var dto = await _service.GetExchangeRatesByIdAsync(id);
@@ -106,7 +102,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /ExchangeRate/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateExchangeRateViewModel viewModel)
@@ -142,7 +137,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /ExchangeRate/Delete/{id}
         public async Task<IActionResult> Delete(Guid id)
         {
             var dto = await _service.GetExchangeRatesByIdAsync(id);
@@ -163,7 +157,6 @@ namespace ImportCostPro.Web.Controllers
             });
         }
 
-        // POST: /ExchangeRate/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

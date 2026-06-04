@@ -14,7 +14,6 @@ namespace ImportCostPro.Web.Controllers
             _service = service;
         }
 
-        // GET: /TaxConfiguration
         public async Task<IActionResult> Index()
         {
             var dto = await _service.GetCurrentAsync();
@@ -29,7 +28,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // GET: /TaxConfiguration/Edit
         public async Task<IActionResult> Edit()
         {
             var dto = await _service.GetCurrentAsync();
@@ -44,7 +42,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /TaxConfiguration/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UpdateTaxConfigurationViewModel viewModel)

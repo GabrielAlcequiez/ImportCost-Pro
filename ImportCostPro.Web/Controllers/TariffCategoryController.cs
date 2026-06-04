@@ -14,7 +14,6 @@ namespace ImportCostPro.Web.Controllers
             _service = service;
         }
 
-        // GET: /TariffCategory
         public async Task<IActionResult> Index()
         {
             var dtos = await _service.GetAllTariffCategoriesAsync();
@@ -34,13 +33,11 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModels);
         }
 
-        // GET: /TariffCategory/Create
         public IActionResult Create()
         {
             return View(new CreateTariffCategoryViewModel());
         }
 
-        // POST: /TariffCategory/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateTariffCategoryViewModel viewModel)
@@ -72,7 +69,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /TariffCategory/Edit/{id}
         public async Task<IActionResult> Edit(Guid id)
         {
             var dto = await _service.GetTariffCategoryByIdAsync(id);
@@ -95,7 +91,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /TariffCategory/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateTariffCategoryViewModel viewModel)
@@ -129,7 +124,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /TariffCategory/Delete/{id}
         public async Task<IActionResult> Delete(Guid id)
         {
             var dto = await _service.GetTariffCategoryByIdAsync(id);
@@ -150,7 +144,6 @@ namespace ImportCostPro.Web.Controllers
             });
         }
 
-        // POST: /TariffCategory/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

@@ -14,7 +14,6 @@ namespace ImportCostPro.Web.Controllers
             _service = service;
         }
 
-        // GET: /Currency
         public async Task<IActionResult> Index()
         {
             var dtos = await _service.GetAllCurrenciesAsync();
@@ -32,13 +31,11 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModels);
         }
 
-        // GET: /Currency/Create
         public IActionResult Create()
         {
             return View(new CreateCurrencyViewModel());
         }
 
-        // POST: /Currency/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateCurrencyViewModel viewModel)
@@ -68,7 +65,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /Currency/Edit/{id}
         public async Task<IActionResult> Edit(Guid id)
         {
             var dto = await _service.GetCurrencyByIdAsync(id);
@@ -89,7 +85,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /Currency/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateCurrencyViewModel viewModel)
@@ -126,7 +121,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /Currency/Delete/{id}
         public async Task<IActionResult> Delete(Guid id)
         {
             var dto = await _service.GetCurrencyByIdAsync(id);
@@ -145,7 +139,6 @@ namespace ImportCostPro.Web.Controllers
             });
         }
 
-        // POST: /Currency/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

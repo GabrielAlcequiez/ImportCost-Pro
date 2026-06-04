@@ -35,7 +35,6 @@ namespace ImportCostPro.Web.Controllers
             _exchangeRateService = exchangeRateService;
         }
 
-        // GET: /ImportOrder
         public async Task<IActionResult> Index()
         {
             var dtos = await _service.GetAllAsync();
@@ -57,7 +56,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModels);
         }
 
-        // GET: /ImportOrder/Create
         public async Task<IActionResult> Create()
         {
             var viewModel = new CreateImportOrderViewModel
@@ -72,7 +70,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /ImportOrder/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateImportOrderViewModel viewModel)
@@ -119,7 +116,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /ImportOrder/Edit/{id}
         public async Task<IActionResult> Edit(Guid id)
         {
             var dto = await _service.GetByIdAsync(id);
@@ -179,7 +175,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /ImportOrder/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateImportOrderViewModel viewModel)
@@ -239,7 +234,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /ImportOrder/AddDetail/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddDetail(Guid id, Guid productId, decimal quantity, decimal unitCostFob, decimal unitWeight, decimal customDutyPercentage, decimal desiredProfitMargin)
@@ -273,7 +267,6 @@ namespace ImportCostPro.Web.Controllers
             return RedirectToAction(nameof(Edit), new { id });
         }
 
-        // POST: /ImportOrder/RemoveDetail/{detailId}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveDetail(Guid detailId, Guid orderId)
@@ -295,7 +288,6 @@ namespace ImportCostPro.Web.Controllers
             return RedirectToAction(nameof(Edit), new { id = orderId });
         }
 
-        // POST: /ImportOrder/AddExpense/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddExpense(Guid id, ExpenseType expenseType, decimal amount, Guid currencyId, decimal exchangeRateValue, ApportionmentMethod apportionmentMethod, DateTime expenseDate)
@@ -329,7 +321,6 @@ namespace ImportCostPro.Web.Controllers
             return RedirectToAction(nameof(Edit), new { id });
         }
 
-        // POST: /ImportOrder/RemoveExpense/{expenseId}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveExpense(Guid expenseId, Guid orderId)
@@ -351,7 +342,6 @@ namespace ImportCostPro.Web.Controllers
             return RedirectToAction(nameof(Edit), new { id = orderId });
         }
 
-        // GET: /ImportOrder/Details/{id}
         public async Task<IActionResult> Details(Guid id)
         {
             var dto = await _service.GetByIdAsync(id);
@@ -392,7 +382,7 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // GET: /ImportOrder/Delete/{id}
+
         public async Task<IActionResult> Delete(Guid id)
         {
             var dto = await _service.GetByIdAsync(id);
@@ -416,7 +406,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /ImportOrder/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -438,7 +427,6 @@ namespace ImportCostPro.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: /ImportOrder/CancelOrder/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelOrder(Guid id)
@@ -460,7 +448,6 @@ namespace ImportCostPro.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: /ImportOrder/CloseOrder/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CloseOrder(Guid id)
@@ -484,7 +471,6 @@ namespace ImportCostPro.Web.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        // GET: /ImportOrder/GetLatestExchangeRate
         [HttpGet]
         public async Task<IActionResult> GetLatestExchangeRate(Guid currencyId, DateTime orderDate)
         {
@@ -525,7 +511,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /ImportOrder/GetProductDetails
         [HttpGet]
         public async Task<IActionResult> GetProductDetails(Guid productId)
         {
@@ -544,8 +529,6 @@ namespace ImportCostPro.Web.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-
-        // --- Dropdown Helpers ---
 
         private async Task<List<SelectListItem>> GetImporterSelectListAsync(Guid? selectedId = null)
         {

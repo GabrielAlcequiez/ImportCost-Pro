@@ -147,8 +147,8 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             supplier.Update(
                 supplierUpdateDto.Name.Trim(),
                 supplierUpdateDto.CountryId,
-                supplierUpdateDto.Email?.Trim(),
                 supplierUpdateDto.Telephone?.Trim(),
+                supplierUpdateDto.Email?.Trim(),
                 supplierUpdateDto.CurrencyId,
                 supplierUpdateDto.IsActive
             );

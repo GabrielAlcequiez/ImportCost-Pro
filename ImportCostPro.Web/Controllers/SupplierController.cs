@@ -19,7 +19,6 @@ namespace ImportCostPro.Web.Controllers
             _currencyService = currencyService;
         }
 
-        // GET: /Supplier
         public async Task<IActionResult> Index()
         {
             var dtos = await _service.GetAllSupplierAsync();
@@ -40,7 +39,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModels);
         }
 
-        // GET: /Supplier/Create
         public async Task<IActionResult> Create()
         {
             var viewModel = new CreateSupplierViewModel
@@ -52,7 +50,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /Supplier/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateSupplierViewModel viewModel)
@@ -89,7 +86,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /Supplier/Edit/{id}
         public async Task<IActionResult> Edit(Guid id)
         {
             var dto = await _service.GetSupplierByIdAsync(id);
@@ -113,7 +109,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /Supplier/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateSupplierViewModel viewModel)
@@ -159,7 +154,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /Supplier/Delete/{id}
         public async Task<IActionResult> Delete(Guid id)
         {
             var dto = await _service.GetSupplierByIdAsync(id);
@@ -179,7 +173,6 @@ namespace ImportCostPro.Web.Controllers
             });
         }
 
-        // POST: /Supplier/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

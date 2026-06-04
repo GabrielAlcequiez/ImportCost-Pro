@@ -23,7 +23,6 @@ namespace ImportCostPro.Web.Controllers
             _tariffCategoryService = tariffCategoryService;
         }
 
-        // GET: /Product
         public async Task<IActionResult> Index()
         {
             var dtos = await _service.GetAllProductAsync();
@@ -49,7 +48,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModels);
         }
 
-        // GET: /Product/Create
         public async Task<IActionResult> Create()
         {
             var viewModel = new CreateProductViewModel
@@ -61,7 +59,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /Product/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateProductViewModel viewModel)
@@ -103,7 +100,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /Product/Edit/{id}
         public async Task<IActionResult> Edit(Guid id)
         {
             var dto = await _service.GetProductByIdAsync(id);
@@ -132,7 +128,6 @@ namespace ImportCostPro.Web.Controllers
             return View(viewModel);
         }
 
-        // POST: /Product/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateProductViewModel viewModel)
@@ -183,7 +178,6 @@ namespace ImportCostPro.Web.Controllers
             }
         }
 
-        // GET: /Product/Delete/{id}
         public async Task<IActionResult> Delete(Guid id)
         {
             var dto = await _service.GetProductByIdAsync(id);
@@ -210,7 +204,6 @@ namespace ImportCostPro.Web.Controllers
             });
         }
 
-        // POST: /Product/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

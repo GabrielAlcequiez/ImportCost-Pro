@@ -112,7 +112,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
                 throw new InvalidOperationException("No se puede inactivar la moneda local mientras existan registros que dependan de ella.");
             }
 
-            // If this currency is being marked as local, ensure it's the only one
             if (currencyUpdateDto.IsLocalCurrency)
             {
                 await DeactivateExistingLocalCurrenciesAsync(id);
@@ -147,7 +146,6 @@ namespace ImportCostPro.BusinessLogic.Services.Implementations
             var currency = await _unitOfWork.Currencies.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Currency not found.");
 
-            // Do not allow deleting the local currency
             if (currency.IsLocalCurrency)
             {
                 throw new InvalidOperationException("Cannot delete the active local currency. Designate another currency as local before deleting this one.");
